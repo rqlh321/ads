@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:id="@+id/my_avatars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="95dp"
+            android:layout_height="95dp" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:padding="5dp"
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/my_avatars"
+        android:gravity="right"
+        android:orientation="vertical">
+
+        <TextView
+            android:gravity="right"
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:padding="5dp"
+            android:text="title"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@color/mainColor"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:padding="5dp"
+            android:text="location"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@color/mainColor"
+            android:textSize="16sp" />
+
+        <TextView
+            android:gravity="right"
+            android:id="@+id/cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="cost"
+            android:textColor="@color/primaryColor"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/favoriteDelimer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/content"
+        android:background="#dededede" />
+
+</RelativeLayout>
