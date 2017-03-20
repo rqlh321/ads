@@ -48,10 +48,7 @@ import static ru.example.sic.my_ads.Parse.Constants.PHOTOS;
 import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_IS_IN_USE;
 import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_PHOTO;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS;
-import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTION_IMAGE;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTIVE;
-import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_EN_TITLE;
-import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_RU_TITLE;
 import static ru.example.sic.my_ads.Parse.Constants.USER;
 import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
 import static ru.example.sic.my_ads.Parse.Constants.USER_CONTACTS;
@@ -64,22 +61,6 @@ public final class Parse {
 
     public static class Request {
 
-        public static ArrayList<ParseObject> getObjectBlackList() {
-            ArrayList<ParseObject> list = new ArrayList<>();
-            try {
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                ParseQuery<ParseObject> query = ParseQuery.getQuery(BLACKLIST);
-                query.whereEqualTo(BLACKLIST_WHOM_BLOCKED, currentUser);
-                ArrayList<ParseObject> badObj = (ArrayList<ParseObject>) query.find();
-                for (ParseObject row : badObj) {
-                    list.add(row.getParseObject(BLACKLIST_BLOCKED_USER).fetch());
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return list;
-        }
-
         public static ArrayList<ParseObject> getObjectRelationUser(String columnName) {
             try {
                 ParseUser currentUser = ParseUser.getCurrentUser();
@@ -88,37 +69,6 @@ public final class Parse {
                     queryInRelation.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(currentUser));
                     return (ArrayList<ParseObject>) queryInRelation.find();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
-
-        public static ArrayList<ParseObject> getAllAds(int limit) {
-            try {
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                ParseQuery query = ParseQuery.getQuery(AD);
-                if (currentUser != null) {
-                    query.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(currentUser));
-                }
-                query.orderByDescending(AD_CREATED_AT);
-                query.setLimit(limit);
-                return (ArrayList<ParseObject>) query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
-
-        public static ArrayList<ParseObject> getRecommended(int limit) {
-            try {
-                ParseQuery query = ParseQuery.getQuery(AD);
-                query.whereEqualTo(AD_IS_RECOMMENDED_BY_ADMIN, true);
-                if (limit > 0) {
-                    query.setLimit(limit);
-                }
-                query.orderByDescending(AD_CREATED_AT);
-                return (ArrayList<ParseObject>) query.find();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -201,33 +151,6 @@ public final class Parse {
             return new ArrayList<ParseObject>();
         }
 
-        public static ArrayList<ParseObject> getContacts(ParseObject user, Number type) {
-            if (Data.currentUser != null)
-                try {
-                    ParseQuery<ParseObject> queryRow = ParseQuery.getQuery(USER_CONTACTS);
-                    queryRow.whereEqualTo(USER_CONTACTS_OF_USER, user);
-                    if (type != null) {
-                        queryRow.whereEqualTo(USER_CONTACTS_OF_TYPE, type);
-                    }
-                    queryRow.orderByAscending(USER_CONTACTS_OF_TYPE);
-                    return (ArrayList<ParseObject>) queryRow.find();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            return new ArrayList<>();
-        }
-
-        public static ArrayList<ParseObject> getBanners() {
-            try {
-                ParseQuery<ParseObject> queryRow = ParseQuery.getQuery(PROMO_ACTIONS);
-                queryRow.whereEqualTo(PROMO_ACTIONS_ACTIVE, true);
-                return (ArrayList<ParseObject>) queryRow.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
-
         public static ArrayList<ParseObject> getPhotos(ParseObject ad) {
             try {
                 ParseRelation<ParseObject> relation = ad.getRelation(AD_ALL_PHOTOS);
@@ -236,15 +159,6 @@ public final class Parse {
                 e.printStackTrace();
             }
             return new ArrayList<>();
-        }
-
-        public static ParseObject getOwner(ParseObject object) {
-            try {
-                return object.getParseObject(AD_AUTHOR_ID).fetch();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
 
         public static ArrayList<ParseObject> getBadIds(ParseUser currentUser) {
@@ -301,82 +215,6 @@ public final class Parse {
                 e.printStackTrace();
             }
             return new ArrayList<>();
-        }
-
-        public static int getLikeCount(ParseObject object) {
-            try {
-                return object.getRelation(AD_LIKED).getQuery().count();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }
-
-        public static boolean isFavorite(String id, ParseObject me) {
-            try {
-                if (me.getRelation(USER_FAVORITES).getQuery().whereEqualTo(OBJECT_ID, id).getFirst() != null) {
-                    return true;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
-        public static boolean isLike(ParseObject object, ParseObject me) {
-            if (me != null) {
-                try {
-                    ParseQuery<ParseObject> queryLikes = object.getRelation(AD_LIKED).getQuery();
-                    queryLikes.whereEqualTo(OBJECT_ID, me.getObjectId());
-                    ParseObject user = queryLikes.getFirst();
-                    if (user != null) {
-                        return true;
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
-        }
-
-        public static void addAdReport(String table, String objectColumnName, ParseObject object, String massageColumnName, String massage) {
-            ParseObject row = new ParseObject(table);
-            row.put(objectColumnName, object);
-            row.put(massageColumnName, massage);
-            row.saveInBackground();
-        }
-
-        public static void addToFavorite(String id) {
-            try {
-                ParseQuery<ParseObject> queryRowAd = ParseQuery.getQuery(AD);
-                queryRowAd.whereEqualTo(OBJECT_ID, id);
-                ParseObject rowAd = queryRowAd.getFirst();
-
-                ParseQuery<ParseObject> queryRowUser = ParseQuery.getQuery(USER);
-                queryRowUser.whereEqualTo(OBJECT_ID, ParseUser.getCurrentUser().getObjectId());
-                ParseObject rowUser = queryRowUser.getFirst();
-                ParseRelation<ParseObject> relation = rowUser.getRelation(USER_FAVORITES);
-
-                relation.add(rowAd);
-                rowUser.saveInBackground();
-                ParseQuery.clearAllCachedResults();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public static void addToLiked(String id) {
-            try {
-                ParseQuery<ParseObject> queryRowAd = ParseQuery.getQuery(AD);
-                queryRowAd.whereEqualTo(OBJECT_ID, id);
-                ParseObject rowAd = queryRowAd.getFirst();
-                ParseRelation<ParseObject> likesRelation = rowAd.getRelation(AD_LIKED);
-
-                likesRelation.add(ParseUser.getCurrentUser());
-                rowAd.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
 
         public static boolean addAd(AdContent content) {
@@ -439,7 +277,7 @@ public final class Parse {
                     ParseFile file = new ParseFile("photo.jpg", data);
                     if (i == 0) {
                         row.put(AD_PHOTO, file);
-                       // baner.put(PROMO_ACTIONS_ACTION_IMAGE, file);
+                        // baner.put(PROMO_ACTIONS_ACTION_IMAGE, file);
 
                     }
                     ParseObject photoRow = new ParseObject(PHOTOS);
@@ -457,28 +295,6 @@ public final class Parse {
                 e.printStackTrace();
             }
             return false;
-        }
-
-        public static void addOrRemoveFromBlacklist(String id, Boolean add) {
-            try {
-                ParseQuery<ParseObject> queryUserToBlock = ParseQuery.getQuery(USER);
-                queryUserToBlock.whereEqualTo(OBJECT_ID, id);
-                ParseObject userToBlock = queryUserToBlock.getFirst();
-                if (add) {
-                    ParseObject newWhomBlocked = new ParseObject(BLACKLIST);
-                    newWhomBlocked.put(BLACKLIST_WHOM_BLOCKED, ParseUser.getCurrentUser());
-                    newWhomBlocked.put(BLACKLIST_BLOCKED_USER, userToBlock);
-                    newWhomBlocked.saveInBackground();
-                } else {
-                    ParseQuery<ParseObject> queryWhomBlocked = ParseQuery.getQuery(BLACKLIST);
-                    queryWhomBlocked.whereEqualTo(BLACKLIST_WHOM_BLOCKED, ParseUser.getCurrentUser());
-                    queryWhomBlocked.whereEqualTo(BLACKLIST_BLOCKED_USER, userToBlock);
-                    ParseObject rowWhomBlocked = queryWhomBlocked.getFirst();
-                    rowWhomBlocked.delete();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
 
         public static void deleteAd(String id) {
@@ -502,35 +318,12 @@ public final class Parse {
             object.saveInBackground();
         }
 
-        public static ArrayList<ParseObject> getAdsByIds(ArrayList<String> ids) {
-            try {
-                ParseQuery<ParseObject> query = ParseQuery.getQuery(AD);
-                query.whereContainedIn(OBJECT_ID, ids);
-                query.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(ParseUser.getCurrentUser()));
-                query.orderByDescending(AD_CREATED_AT);
-                return (ArrayList<ParseObject>) query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
     }
 
     public static class Data {
-        public static ParseUser currentUser = ParseUser.getCurrentUser();
-
-        public static ArrayList<ParseObject> banners = new ArrayList<>();
-        public static ArrayList<ParseObject> recommended = new ArrayList<>();
-        public static ArrayList<ParseObject> last = new ArrayList<>();
         public static ArrayList<ParseObject> categoryList = new ArrayList<>();
         public static ArrayList<ParseObject> categoryAds = new ArrayList<>();
-        public static ArrayList<ParseObject> favorite = new ArrayList<>();
         public static ArrayList<ParseObject> my = new ArrayList<>();
-        public static ArrayList<ParseObject> search = new ArrayList<>();
-        public static ArrayList<ParseObject> map = new ArrayList<>();
-        public static ArrayList<ParseObject> blackList = new ArrayList<>();
-        public static ArrayList<ParseObject> myContacts = new ArrayList<>();
-        public static ArrayList<ParseObject> history = new ArrayList<>();
     }
 
     public static final class Constants {

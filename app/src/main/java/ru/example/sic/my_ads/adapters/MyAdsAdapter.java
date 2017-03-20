@@ -2,6 +2,7 @@ package ru.example.sic.my_ads.adapters;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.fragments.main.my.MyAdsFragment;
-import ru.example.sic.my_ads.fragments.view.DetailRootFragment;
+import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.fragments.main.MyAdsFragment;
+import ru.example.sic.my_ads.fragments.view.DetailFragment;
+
+import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> {
 
@@ -80,14 +84,10 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DetailRootFragment detailRootFragment = new DetailRootFragment();
-                detailRootFragment.ad = Parse.Data.my.get(position);
-                detailRootFragment.ads = Parse.Data.my;
-                fragment.getFragmentManager().beginTransaction()
-                        .hide(fragment)
-                        .add(R.id.container_my_ads, detailRootFragment)
-                        .addToBackStack(null)
-                        .commit();
+                Intent intent = new Intent(fragment.getContext(), SupportActivity.class);
+                intent.putExtra(EXTRA_SHAPE, DetailFragment.TAG);
+                intent.putExtra("id", ads.get(position).getObjectId());
+                fragment.startActivity(intent);
             }
         });
     }

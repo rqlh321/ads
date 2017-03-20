@@ -21,7 +21,6 @@ import ru.example.sic.my_ads.EndlessRecyclerOnScrollListener;
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ListAdsAdapter;
-import ru.example.sic.my_ads.fragments.MapFragment;
 import ru.example.sic.my_ads.models.Category;
 import rx.Observable;
 import rx.Observer;
@@ -41,17 +40,6 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private boolean isCategory;
     private ListAdsAdapter adapter;
     private ArrayList<ParseObject> subcategoryObjects = new ArrayList<>();
-
-    @OnClick(R.id.show_on_map)
-    void onMapClick() {
-        Parse.Data.map.clear();
-        Parse.Data.map.addAll(Parse.Data.categoryAds);
-        getFragmentManager().beginTransaction()
-                .hide(this)
-                .add(R.id.container_catalog, new MapFragment())
-                .addToBackStack(null)
-                .commit();
-    }
 
     @Nullable
     @Override

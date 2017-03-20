@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">My Ads</string>
+    <string name="app_id" translatable="false">CPE6ZlvDNZsQeHhLOzoni6WechLXLRlQGDhcYQQO</string>
+    <string name="client_key" translatable="false">WUN4r5JUXXvyn2ZGn1oZsSZ3tERbE0WQIcNtLyLZ</string>
+    <string name="server" translatable="false">https://ads9000.herokuapp.com/parse</string>
     <string name="favorite_on_map">Favorite on map</string>
     <string name="clear">Clear</string>
     <string name="owner">Show owner</string>

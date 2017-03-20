@@ -1,100 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/refresh"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/homeImage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop" />
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/homeImage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/bright"
+            android:enabled="true"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/recommendedAds"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/signIn"
-                android:layout_width="200dp"
+        <HorizontalScrollView
+            android:id="@+id/first"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:id="@+id/linearRecommended"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/button_not_active"
-                android:text="@string/signIn"
-                android:textAllCaps="false"
-                android:textColor="@color/gray"
-                android:textSize="18sp"
-                app:layout_widthPercent="50%" />
+                android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/bright"
-                android:enabled="true"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="@string/recommendedAds"
-                android:textColor="@color/gray"
-                android:textSize="18sp" />
+            </LinearLayout>
 
-            <HorizontalScrollView
-                android:id="@+id/first"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+        </HorizontalScrollView>
 
-                <LinearLayout
-                    android:id="@+id/linearRecommended"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/locationAdsText"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="10dp"
+            android:background="@color/bright"
+            android:enabled="true"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/all_ads"
+            android:textAllCaps="true"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
 
-                </LinearLayout>
+        <HorizontalScrollView
+            android:id="@+id/second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
 
-            </HorizontalScrollView>
-
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/locationAdsText"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_marginTop="10dp"
-                android:background="@color/bright"
-                android:enabled="true"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="@string/all_ads"
-                android:textAllCaps="true"
-                android:textColor="@color/gray"
-                android:textSize="18sp" />
-
-            <HorizontalScrollView
-                android:id="@+id/second"
+            <LinearLayout
+                android:id="@+id/linearLastAds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp">
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/linearLastAds"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+            </LinearLayout>
 
-                </LinearLayout>
+        </HorizontalScrollView>
 
-            </HorizontalScrollView>
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-</android.support.v4.widget.SwipeRefreshLayout>
+</android.support.v4.widget.NestedScrollView>

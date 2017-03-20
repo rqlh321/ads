@@ -18,11 +18,9 @@ import java.util.List;
 
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.activity.SupportActivity;
-import ru.example.sic.my_ads.fragments.support.CreateAdFragment;
+import ru.example.sic.my_ads.fragments.CreateAdFragment;
 import ru.example.sic.my_ads.fragments.main.catalog.CatalogRootFragment;
 import ru.example.sic.my_ads.fragments.main.catalog.ListAdsFragment;
-import ru.example.sic.my_ads.fragments.search.SearchAdvancedFragment;
-import ru.example.sic.my_ads.fragments.search.SearchFragment;
 import ru.example.sic.my_ads.models.Catalog;
 import ru.example.sic.my_ads.models.Category;
 
@@ -114,22 +112,6 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                                 .findFragmentByTag(SupportActivity.TAG);
                         createAdFragment.categoryText.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.getRu() : mSubCatalogItem.getEn());
                         createAdFragment.category = mSubCatalogItem.getEn();
-                        fragment.getActivity().onBackPressed();
-                    }
-                });
-                break;
-            case SearchAdvancedFragment.TAG:
-                subCategoryViewHolder.subCatalog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        SearchFragment searchFragment = (SearchFragment) fragment
-                                .getFragmentManager()
-                                .findFragmentByTag(SupportActivity.TAG);
-                        SearchAdvancedFragment advancedSearch = (SearchAdvancedFragment) searchFragment
-                                .getChildFragmentManager()
-                                .findFragmentByTag("android:switcher:" + R.id.viewpagerSearch + ":1");
-                        advancedSearch.category.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.getRu() : mSubCatalogItem.getEn());
-                        advancedSearch.categoryTrueName = mSubCatalogItem.getEn();
                         fragment.getActivity().onBackPressed();
                     }
                 });

@@ -8,13 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.fragments.support.BlackListFragment;
-import ru.example.sic.my_ads.fragments.support.CreateAdFragment;
-import ru.example.sic.my_ads.fragments.support.HelloFragment;
-import ru.example.sic.my_ads.fragments.support.HistoryFragment;
-import ru.example.sic.my_ads.fragments.support.LicenseFragment;
-import ru.example.sic.my_ads.fragments.support.ProfileFragment;
-import ru.example.sic.my_ads.fragments.search.SearchFragment;
+import ru.example.sic.my_ads.fragments.CreateAdFragment;
+import ru.example.sic.my_ads.fragments.view.DetailFragment;
 
 import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 
@@ -34,33 +29,14 @@ public class SupportActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             switch (getIntent().getStringExtra(EXTRA_SHAPE)) {
-                case ProfileFragment.TAG:
-                    transaction.add(R.id.support_container, new ProfileFragment());
-                    ab.setTitle(R.string.my_profile);
-                    break;
-                case HelloFragment.TAG:
-                    transaction.add(R.id.support_container, new HelloFragment());
-                    ab.setTitle(R.string.app_name);
-                    break;
-                case LicenseFragment.TAG:
-                    transaction.add(R.id.support_container, new LicenseFragment());
-                    ab.setTitle(R.string.about);
-                    break;
-                case BlackListFragment.TAG:
-                    transaction.add(R.id.support_container, new BlackListFragment());
-                    ab.setTitle(R.string.my_blacklist);
-                    break;
-                case HistoryFragment.TAG:
-                    transaction.add(R.id.support_container, new HistoryFragment());
-                    ab.setTitle(R.string.menu_last_viewed);
-                    break;
                 case CreateAdFragment.TAG:
                     transaction.add(R.id.support_container, new CreateAdFragment(), TAG);
                     ab.setTitle(R.string.create_ad_button);
                     break;
-                case SearchFragment.TAG:
-                    transaction.add(R.id.support_container, new SearchFragment(),TAG);
-                    ab.setTitle(R.string.search);
+                case DetailFragment.TAG:
+                    DetailFragment detailFragment = new DetailFragment();
+                    detailFragment.setArguments(getIntent().getExtras());
+                    transaction.add(R.id.support_container, detailFragment, TAG);
                     break;
             }
             transaction.commit();

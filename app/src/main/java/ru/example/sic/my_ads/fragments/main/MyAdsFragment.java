@@ -1,5 +1,6 @@
-package ru.example.sic.my_ads.fragments.support;
+package ru.example.sic.my_ads.fragments.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,42 +17,48 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.adapters.BlackListAdapter;
+import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.adapters.MyAdsAdapter;
+import ru.example.sic.my_ads.fragments.CreateAdFragment;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class BlackListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    public static final String TAG = "BlackListFragment";
-    BlackListAdapter adapter;
+import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
+import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
+
+public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    MyAdsAdapter adapter;
     @BindView(R.id.refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
+    @OnClick(R.id.add_ad)
+    void createAd() {
+        Intent intent = new Intent(getContext(), SupportActivity.class);
+        intent.putExtra(EXTRA_SHAPE, CreateAdFragment.TAG);
+        startActivity(intent);
+    }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_my_ads, container, false);
         ButterKnife.bind(this, view);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        adapter = new BlackListAdapter(this, Parse.Data.blackList);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new MyAdsAdapter(this, Parse.Data.my);
         recyclerView.setAdapter(adapter);
+
         mSwipeRefreshLayout.setOnRefreshListener(this);
-
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Parse.Data.blackList.size() == 0) {
+        if (Parse.Data.my.size() == 0) {
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -59,20 +66,23 @@ public class BlackListFragment extends Fragment implements SwipeRefreshLayout.On
                 }
             });
         }
+        return view;
     }
 
     @Override
     public void onRefresh() {
         mSwipeRefreshLayout.setRefreshing(true);
-        getBlackList();
+        Parse.Data.my.clear();
+        adapter.notifyDataSetChanged();
+        getAdsList();
     }
 
-    private void getBlackList() {
+    private void getAdsList() {
         Observable.just(false)
                 .map(new Func1<Boolean, ArrayList<ParseObject>>() {
                     @Override
                     public ArrayList<ParseObject> call(Boolean b) {
-                        return Parse.Request.getObjectBlackList();
+                        return Parse.Request.getObjectRelationUser(USER_ADS_OF_USER);
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -90,11 +100,11 @@ public class BlackListFragment extends Fragment implements SwipeRefreshLayout.On
 
                     @Override
                     public void onNext(final ArrayList<ParseObject> objects) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        Parse.Data.blackList.clear();
-                        Parse.Data.blackList.addAll(objects);
+                        Parse.Data.my.addAll(objects);
                         adapter.notifyDataSetChanged();
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 });
     }
+
 }

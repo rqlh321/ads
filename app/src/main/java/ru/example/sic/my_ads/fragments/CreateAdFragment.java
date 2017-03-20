@@ -1,4 +1,4 @@
-package ru.example.sic.my_ads.fragments.support;
+package ru.example.sic.my_ads.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

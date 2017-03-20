@@ -2,6 +2,7 @@ package ru.example.sic.my_ads.adapters;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,8 +21,10 @@ import java.util.ArrayList;
 
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.fragments.view.DetailRootFragment;
+import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.fragments.view.DetailFragment;
 
+import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
 import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
@@ -65,15 +68,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DetailRootFragment detailRootFragment = new DetailRootFragment();
-                detailRootFragment.ad = listParse.get(position);
-                detailRootFragment.ads = listParse;
-                fragment.getFragmentManager()
-                        .beginTransaction()
-                        .hide(fragment)
-                        .add(R.id.container_favorite, detailRootFragment)
-                        .addToBackStack(null)
-                        .commit();
+                Intent intent = new Intent(fragment.getContext(), SupportActivity.class);
+                intent.putExtra(EXTRA_SHAPE, DetailFragment.TAG);
+                intent.putExtra("id", listParse.get(position).getObjectId());
+                fragment.startActivity(intent);
             }
         });
         holder.remove.setOnClickListener(new View.OnClickListener() {

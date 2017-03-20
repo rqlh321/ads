@@ -1,5 +1,6 @@
 package ru.example.sic.my_ads.adapters;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,11 +15,11 @@ import com.parse.ParseObject;
 
 import java.util.ArrayList;
 
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.fragments.main.catalog.ListAdsFragment;
-import ru.example.sic.my_ads.fragments.view.DetailRootFragment;
+import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.fragments.view.DetailFragment;
 
+import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
 import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
@@ -31,10 +32,10 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
     private Fragment fragment;
     int containerId;
 
-    public ListAdsAdapter(Fragment fragment, ArrayList<ParseObject> list,int containerId) {
+    public ListAdsAdapter(Fragment fragment, ArrayList<ParseObject> list, int containerId) {
         this.adList = list;
         this.fragment = fragment;
-        this.containerId=containerId;
+        this.containerId = containerId;
     }
 
 
@@ -60,14 +61,10 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DetailRootFragment detailRootFragment = new DetailRootFragment();
-                detailRootFragment.ad = adList.get(position);
-                detailRootFragment.ads = adList;
-                fragment.getFragmentManager().beginTransaction()
-                        .hide(fragment)
-                        .add(containerId, detailRootFragment)
-                        .addToBackStack(null)
-                        .commit();
+                Intent intent = new Intent(fragment.getContext(), SupportActivity.class);
+                intent.putExtra(EXTRA_SHAPE, DetailFragment.TAG);
+                intent.putExtra("id", adList.get(position).getObjectId());
+                fragment.startActivity(intent);
             }
         });
     }
