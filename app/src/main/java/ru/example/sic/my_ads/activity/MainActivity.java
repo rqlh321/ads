@@ -5,14 +5,18 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.parse.ParseObject;
+
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ViewPagerAdapter;
 import ru.example.sic.my_ads.fragments.main.HomeFragment;
 import ru.example.sic.my_ads.fragments.main.MyAdsFragment;
-import ru.example.sic.my_ads.fragments.main.catalog.CatalogRootFragment;
 import ru.example.sic.my_ads.fragments.main.SearchSimpleFragment;
+import ru.example.sic.my_ads.fragments.main.catalog.CatalogRootFragment;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.viewpager)
@@ -20,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tabs)
     TabLayout tabLayout;
 
+    public ArrayList<ParseObject> my = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

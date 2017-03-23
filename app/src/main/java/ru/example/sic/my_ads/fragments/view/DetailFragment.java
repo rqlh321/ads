@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +12,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.pixplicity.multiviewpager.MultiViewPager;
+import com.parse.ParseRelation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,14 +32,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 import static ru.example.sic.my_ads.Parse.Constants.AD;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
+import static ru.example.sic.my_ads.Parse.Constants.AD_ALL_PHOTOS;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CONTENT;
 import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
@@ -58,7 +53,7 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.star)
     ImageView star;
     @BindView(R.id.productPictures)
-    MultiViewPager adsPager;
+    ImageView adsPager;
     @BindView(R.id.owner)
     LinearLayout ownerView;
     @BindView(R.id.person_type)
@@ -146,50 +141,24 @@ public class DetailFragment extends Fragment {
     }
 
     private void getPics() {
-        Observable.just(ad != null)
-                .map(new Func1<Boolean, ArrayList<ParseObject>>() {
-                    @Override
-                    public ArrayList<ParseObject> call(Boolean adExist) {
-                        if (adExist) {
-                            return Parse.Request.getPhotos(ad);
-                        }
-                        return new ArrayList<>();
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<ParseObject>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(final ArrayList<ParseObject> objects) {
-                        if (objects.size() > 0) {
-                            titlePicUri = objects.get(0).getParseFile(PHOTOS_PHOTO).getUrl();
-                            adsPager.setAdapter(new FragmentStatePagerAdapter(getActivity().getSupportFragmentManager()) {
-
-                                @Override
-                                public int getCount() {
-                                    return objects.size();
-                                }
-
-                                @Override
-                                public Fragment getItem(int position) {
-                                    return AdPicturesFragment.create(objects.get(position).getParseFile(PHOTOS_PHOTO).getUrl());
-                                }
-                            });
-                        } else {
-                            adsPager.setVisibility(View.GONE);
-                        }
-                    }
-                });
+        ParseRelation<ParseObject> relation = ad.getRelation(AD_ALL_PHOTOS);
+        relation.getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (objects.size() > 0) {
+                    titlePicUri = objects.get(0).getParseFile(PHOTOS_PHOTO).getUrl();
+                    Glide.with(getContext())
+                            .load(objects.get(0).getParseFile(PHOTOS_PHOTO).getUrl())
+                            .centerCrop()
+                            //.placeholder(R.drawable.loadfish)
+                            .crossFade()
+                            .dontAnimate()
+                            .into(adsPager);
+                } else {
+                    adsPager.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
 }

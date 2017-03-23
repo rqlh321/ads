@@ -40,7 +40,14 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private boolean isCategory;
     private ListAdsAdapter adapter;
     private ArrayList<ParseObject> subcategoryObjects = new ArrayList<>();
-
+    @OnClick(R.id.show_on_map)
+    void onMapClick() {
+        getFragmentManager().beginTransaction()
+                .hide(this)
+                .add(R.id.container_catalog, new MapFragment())
+                .addToBackStack(null)
+                .commit();
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

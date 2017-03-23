@@ -24,12 +24,15 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.activity.SplashActivity;
 import ru.example.sic.my_ads.activity.SupportActivity;
 import ru.example.sic.my_ads.fragments.view.DetailFragment;
 
@@ -57,6 +60,13 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.linearLastAds)
     LinearLayout linearLastAds;
 
+    @OnClick(R.id.logout)
+    public void logout() {
+        ParseUser.logOut();
+        startActivity(new Intent(getContext(), SplashActivity.class));
+        getActivity().finish();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -75,7 +85,11 @@ public class HomeFragment extends Fragment {
         queryRow.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> results, ParseException e) {
-                addBanners(results);
+                if (e == null) {
+                    addBanners(results);
+                } else {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -88,7 +102,11 @@ public class HomeFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> results, ParseException e) {
-                addAds(results, linearRecommended);
+                if (e == null) {
+                    addAds(results, linearRecommended);
+                } else {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -100,7 +118,11 @@ public class HomeFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> results, ParseException e) {
-                addAds(results, linearLastAds);
+                if (e == null) {
+                    addAds(results, linearLastAds);
+                } else {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -120,7 +142,7 @@ public class HomeFragment extends Fragment {
                     byte[] dataPic = pic.getData();
                     Bitmap bitmap = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
                     imageView.setImageBitmap(bitmap);
-                    textView.setText(banner.getString(LANGUAGE.equals("en") ? PROMO_ACTIONS_EN_TITLE : PROMO_ACTIONS_RU_TITLE));
+                    textView.setText(banner.getString(LANGUAGE.equals("ru") ? PROMO_ACTIONS_RU_TITLE : PROMO_ACTIONS_EN_TITLE));
                     //creation bitmap from view
                     frameLayout.setDrawingCacheEnabled(true);
                     frameLayout.measure(FrameLayout.MeasureSpec.makeMeasureSpec(0, FrameLayout.MeasureSpec.UNSPECIFIED), FrameLayout.MeasureSpec.makeMeasureSpec(0, FrameLayout.MeasureSpec.UNSPECIFIED));

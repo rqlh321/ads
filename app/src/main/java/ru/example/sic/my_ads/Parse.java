@@ -61,20 +61,6 @@ public final class Parse {
 
     public static class Request {
 
-        public static ArrayList<ParseObject> getObjectRelationUser(String columnName) {
-            try {
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                if (currentUser != null) {
-                    ParseQuery<ParseObject> queryInRelation = currentUser.getRelation(columnName).getQuery();
-                    queryInRelation.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(currentUser));
-                    return (ArrayList<ParseObject>) queryInRelation.find();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
-
         public static ArrayList<ParseObject> getSearchResult(String address, String subcategory, int isPerson, int whereToSearch, String textForSearch, String costStart, String costEnd) {
             try {
                 ParseQuery query = ParseQuery.getQuery(AD);
@@ -323,7 +309,6 @@ public final class Parse {
     public static class Data {
         public static ArrayList<ParseObject> categoryList = new ArrayList<>();
         public static ArrayList<ParseObject> categoryAds = new ArrayList<>();
-        public static ArrayList<ParseObject> my = new ArrayList<>();
     }
 
     public static final class Constants {

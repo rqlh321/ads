@@ -76,6 +76,19 @@
 
         </HorizontalScrollView>
 
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/logout"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_not_active"
+            android:text="@string/logout_text"
+            android:textAllCaps="false"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

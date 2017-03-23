@@ -4,38 +4,37 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.activity.MainActivity;
 import ru.example.sic.my_ads.activity.SupportActivity;
 import ru.example.sic.my_ads.adapters.MyAdsAdapter;
 import ru.example.sic.my_ads.fragments.CreateAdFragment;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
 
-public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    MyAdsAdapter adapter;
-    @BindView(R.id.refresh)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+public class MyAdsFragment extends Fragment {
+    private MyAdsAdapter adapter;
+    private ArrayList<ParseObject> my;
+
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
@@ -54,57 +53,34 @@ public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new MyAdsAdapter(this, Parse.Data.my);
+        my = ((MainActivity) getActivity()).my;
+        adapter = new MyAdsAdapter(this, my);
         recyclerView.setAdapter(adapter);
 
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        if (Parse.Data.my.size() == 0) {
-            mSwipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    onRefresh();
-                }
-            });
-        }
         return view;
     }
 
     @Override
-    public void onRefresh() {
-        mSwipeRefreshLayout.setRefreshing(true);
-        Parse.Data.my.clear();
-        adapter.notifyDataSetChanged();
+    public void onResume() {
+        super.onResume();
         getAdsList();
     }
 
     private void getAdsList() {
-        Observable.just(false)
-                .map(new Func1<Boolean, ArrayList<ParseObject>>() {
-                    @Override
-                    public ArrayList<ParseObject> call(Boolean b) {
-                        return Parse.Request.getObjectRelationUser(USER_ADS_OF_USER);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<ParseObject>>() {
-                    @Override
-                    public void onCompleted() {
+        ParseQuery<ParseObject> queryRow = ParseUser.getCurrentUser().getRelation(USER_ADS_OF_USER).getQuery();
+        queryRow.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> results, ParseException e) {
+                if (e == null) {
+                    my.clear();
+                    my.addAll(results);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(final ArrayList<ParseObject> objects) {
-                        Parse.Data.my.addAll(objects);
-                        adapter.notifyDataSetChanged();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                });
     }
 
 }
