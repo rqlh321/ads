@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.fragments.CreateAdFragment;
-import ru.example.sic.my_ads.fragments.view.DetailFragment;
+import ru.example.sic.my_ads.fragments.DetailFragment;
 
 import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 

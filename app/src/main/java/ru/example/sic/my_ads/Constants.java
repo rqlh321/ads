@@ -2,10 +2,6 @@ package ru.example.sic.my_ads;
 
 import java.util.Locale;
 
-/**
- * Created by sic on 29.09.2016.
- */
-
 public final class Constants {
     public static final String LANGUAGE = Locale.getDefault().getDisplayLanguage().equals("English") ? "en" : "ru";
     public static final String EXTRA_SELECTED_CATEGORY = "extraSelectedCategory";

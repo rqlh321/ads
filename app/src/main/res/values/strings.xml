@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">My Ads</string>
+    <string name="app_name">My Ads</string>
     <string name="app_id" translatable="false">CPE6ZlvDNZsQeHhLOzoni6WechLXLRlQGDhcYQQO</string>
     <string name="client_key" translatable="false">WUN4r5JUXXvyn2ZGn1oZsSZ3tERbE0WQIcNtLyLZ</string>
     <string name="server" translatable="false">https://ads9000.herokuapp.com/parse</string>
@@ -466,6 +466,8 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
     <plurals name="days_count">
         <item quantity="zero">Today</item>
         <item quantity="one">%s day ago</item>
@@ -476,4 +478,6 @@
         <item>Three Months</item>
         <item>In perpetuity</item>
     </string-array>
+    <string name="com_parse_ui_login_help_email_input_hint">Email</string>
+    <string name="sms">Sms</string>
 </resources>

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.activity.SupportActivity;
-import ru.example.sic.my_ads.fragments.view.DetailFragment;
+import ru.example.sic.my_ads.fragments.DetailFragment;
 
 import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;

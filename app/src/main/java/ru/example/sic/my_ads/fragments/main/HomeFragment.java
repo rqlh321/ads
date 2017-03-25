@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,39 +27,51 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ru.example.sic.my_ads.Constants;
+import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.activity.MainActivity;
 import ru.example.sic.my_ads.activity.SplashActivity;
 import ru.example.sic.my_ads.activity.SupportActivity;
-import ru.example.sic.my_ads.fragments.view.DetailFragment;
+import ru.example.sic.my_ads.fragments.DetailFragment;
+import ru.example.sic.my_ads.models.Ad;
 
 import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
 import static ru.example.sic.my_ads.Constants.LANGUAGE;
 import static ru.example.sic.my_ads.Parse.Constants.AD;
-import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CREATED_AT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
 import static ru.example.sic.my_ads.Parse.Constants.AD_IS_RECOMMENDED_BY_ADMIN;
-import static ru.example.sic.my_ads.Parse.Constants.AD_PHOTO;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTION_IMAGE;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTIVE;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_EN_TITLE;
 import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_RU_TITLE;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    public static final String[] PREVIEW_KEYS = new String[]{Ad.PHOTO, Ad.COST, Ad.CURRENCY, Ad.AUTHOR_ID};
+
+    private ArrayList<ParseObject> recommended;
+    private ArrayList<ParseObject> last;
+    private ArrayList<ParseObject> banners;
     @BindView(R.id.homeImage)
-    AppCompatImageView bannerHolder;
+    public AppCompatImageView bannerHolder;
 
     @BindView(R.id.linearRecommended)
-    LinearLayout linearRecommended;
+    public LinearLayout linearRecommended;
 
     @BindView(R.id.linearLastAds)
-    LinearLayout linearLastAds;
+    public LinearLayout linearLastAds;
+
+    @BindView(R.id.refresh)
+    public SwipeRefreshLayout refresh;
 
     @OnClick(R.id.logout)
     public void logout() {
@@ -72,59 +85,85 @@ public class HomeFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
 
-        getBanners();
-        getRecommended();
-        getLast();
+        banners = ((MainActivity) getActivity()).banners;
+        recommended = ((MainActivity) getActivity()).recommended;
+        last = ((MainActivity) getActivity()).last;
+
+        refresh.setOnRefreshListener(this);
+        if (recommended.size() == 0 || last.size() == 0 || banners.size() == 0) {
+            refresh.setRefreshing(true);
+            onRefresh();
+        } else {
+            addBanners(banners);
+            addAds(recommended, linearRecommended);
+            addAds(last, linearLastAds);
+        }
 
         return view;
     }
 
+    @Override
+    public void onRefresh() {
+        getBanners();
+        getRecommended();
+        getLast();
+    }
+
     private void getBanners() {
-        ParseQuery<ParseObject> queryRow = ParseQuery.getQuery(PROMO_ACTIONS);
-        queryRow.whereEqualTo(PROMO_ACTIONS_ACTIVE, true);
-        queryRow.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> results, ParseException e) {
-                if (e == null) {
-                    addBanners(results);
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
+        ParseQuery.getQuery(PROMO_ACTIONS)
+                .whereEqualTo(PROMO_ACTIONS_ACTIVE, true)
+                .findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> results, ParseException e) {
+                        if (e == null) {
+                            banners.clear();
+                            banners.addAll(results);
+                            addBanners(banners);
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private void getRecommended() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(AD);
-        query.whereEqualTo(AD_IS_RECOMMENDED_BY_ADMIN, true);
-        query.setLimit(10);
-        query.orderByDescending(AD_CREATED_AT);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> results, ParseException e) {
-                if (e == null) {
-                    addAds(results, linearRecommended);
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
+        ParseQuery.getQuery(AD)
+                .whereEqualTo(AD_IS_RECOMMENDED_BY_ADMIN, true)
+                .setLimit(10)
+                .selectKeys(new HashSet<>(Arrays.asList(PREVIEW_KEYS)))
+                .orderByDescending(AD_CREATED_AT)
+                .findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> results, ParseException e) {
+                        if (e == null) {
+                            recommended.clear();
+                            recommended.addAll(results);
+                            addAds(recommended, linearRecommended);
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private void getLast() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(AD);
-        query.orderByDescending(AD_CREATED_AT);
-        query.setLimit(10);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> results, ParseException e) {
-                if (e == null) {
-                    addAds(results, linearLastAds);
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
+        ParseQuery.getQuery(AD)
+                .selectKeys(new HashSet<>(Arrays.asList(PREVIEW_KEYS)))
+                .orderByDescending(AD_CREATED_AT)
+                .setLimit(10)
+                .findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> results, ParseException e) {
+                        refresh.setRefreshing(false);
+                        if (e == null) {
+                            last.clear();
+                            last.addAll(results);
+                            addAds(last, linearLastAds);
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private void addBanners(List<ParseObject> parseBanners) {
@@ -165,32 +204,32 @@ public class HomeFragment extends Fragment {
 
     private void addAds(final List<ParseObject> ads, final LinearLayout layout) {
         layout.removeAllViews();
-        for (final ParseObject ad : ads) {
+        for (final ParseObject parseObject : ads) {
+            Ad ad = new Ad(parseObject);
             LayoutInflater ltInflater = getActivity().getLayoutInflater();
             View preview = ltInflater.inflate(R.layout.preview_ad, null);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(290, 200);
             preview.setLayoutParams(layoutParams);
             ImageView pic = (ImageView) preview.findViewById(R.id.pic);
 
-            if (ad.getParseFile(AD_PHOTO) != null) {
-                Glide.with(getActivity())
-                        .load(ad.getParseFile(AD_PHOTO).getUrl())
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(pic);
-            }
+            Glide.with(getActivity())
+                    .load(ad.photoUrl)
+                    .dontAnimate()
+                    .centerCrop()
+                    .into(pic);
             TextView cost = (TextView) preview.findViewById(R.id.cost);
-            cost.setText(ad.getInt(AD_COST) + " " + ad.getString(AD_CURRENCY));
+            cost.setText(ad.cost + " " + ad.currency);
             preview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), SupportActivity.class);
                     intent.putExtra(EXTRA_SHAPE, DetailFragment.TAG);
-                    intent.putExtra("id", ad.getObjectId());
+                    intent.putExtra("id", parseObject.getObjectId());
                     startActivity(intent);
                 }
             });
             layout.addView(preview);
         }
     }
+
 }

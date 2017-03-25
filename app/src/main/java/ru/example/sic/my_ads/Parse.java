@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import ru.example.sic.my_ads.models.AdContent;
+import ru.example.sic.my_ads.models.Ad;
 
 import static ru.example.sic.my_ads.Parse.Constants.AD;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
@@ -29,7 +29,6 @@ import static ru.example.sic.my_ads.Parse.Constants.AD_CREATED_AT;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
 import static ru.example.sic.my_ads.Parse.Constants.AD_EXPIRATION_DATE;
 import static ru.example.sic.my_ads.Parse.Constants.AD_IS_RECOMMENDED_BY_ADMIN;
-import static ru.example.sic.my_ads.Parse.Constants.AD_LIKED;
 import static ru.example.sic.my_ads.Parse.Constants.AD_LIKES;
 import static ru.example.sic.my_ads.Parse.Constants.AD_PHOTO;
 import static ru.example.sic.my_ads.Parse.Constants.AD_SUBCATEGORY_OBJECT;
@@ -47,14 +46,8 @@ import static ru.example.sic.my_ads.Parse.Constants.OBJECT_ID;
 import static ru.example.sic.my_ads.Parse.Constants.PHOTOS;
 import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_IS_IN_USE;
 import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_PHOTO;
-import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS;
-import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTIVE;
 import static ru.example.sic.my_ads.Parse.Constants.USER;
 import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
-import static ru.example.sic.my_ads.Parse.Constants.USER_CONTACTS;
-import static ru.example.sic.my_ads.Parse.Constants.USER_CONTACTS_OF_TYPE;
-import static ru.example.sic.my_ads.Parse.Constants.USER_CONTACTS_OF_USER;
-import static ru.example.sic.my_ads.Parse.Constants.USER_FAVORITES;
 import static ru.example.sic.my_ads.Parse.Constants.USER_IS_PERSON;
 
 public final class Parse {
@@ -137,16 +130,6 @@ public final class Parse {
             return new ArrayList<ParseObject>();
         }
 
-        public static ArrayList<ParseObject> getPhotos(ParseObject ad) {
-            try {
-                ParseRelation<ParseObject> relation = ad.getRelation(AD_ALL_PHOTOS);
-                return (ArrayList<ParseObject>) relation.getQuery().find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
-
         public static ArrayList<ParseObject> getBadIds(ParseUser currentUser) {
             ArrayList<ParseObject> bad = new ArrayList<>();
             try {
@@ -203,86 +186,6 @@ public final class Parse {
             return new ArrayList<>();
         }
 
-        public static boolean addAd(AdContent content) {
-            try {
-                ParseGeoPoint point = new ParseGeoPoint(content.latitude, content.longitude);
-                ParseObject row = new ParseObject(AD);
-
-                /*ParseObject baner = new ParseObject(PROMO_ACTIONS);
-                baner.put(PROMO_ACTIONS_ACTIVE, true);
-                baner.put(PROMO_ACTIONS_EN_TITLE, "Test promo action!");
-                baner.put(PROMO_ACTIONS_RU_TITLE, "Тестовая акция!");
-*/
-                ParseRelation<ParseObject> relationToPhotos = row.getRelation(AD_ALL_PHOTOS);
-
-                ParseQuery<ParseObject> queryUser = ParseQuery.getQuery(USER);
-                queryUser.whereEqualTo(OBJECT_ID, ParseUser.getCurrentUser().getObjectId());
-                ParseObject rowUser = queryUser.getFirst();
-                ParseRelation<ParseObject> relationUser = rowUser.getRelation(USER_ADS_OF_USER);
-
-                row.put(AD_AUTHOR_ID, ParseUser.getCurrentUser());
-                row.put(AD_VIEWS, 0);
-                row.put(AD_VIEWED_AT, new Date());
-                row.put(AD_LIKES, 0);
-                row.put(AD_IS_RECOMMENDED_BY_ADMIN, false);
-                if (content.longitude != 0 && content.latitude != 0) {
-                    row.put(AD_COORDINATES, point);
-                }
-                row.put(AD_CURRENCY, content.currency);
-                row.put(AD_ADDRESS, content.adr);
-                row.put(AD_TITLE, content.title);
-                ParseQuery<ParseObject> queryCategory = ParseQuery.getQuery(CATEGORY);
-                ParseObject subcategoryObjects = queryCategory.whereEqualTo(CATEGORY_EN_TITLE, content.category).getFirst();
-                row.put(AD_SUBCATEGORY_OBJECT, subcategoryObjects);
-                row.put(AD_CONTENT, content.desc);
-                row.put(AD_COST, content.cost);
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(new Date());
-
-                switch (content.duration) {
-                    case 0: {
-                        cal.add(Calendar.MONTH, 1);
-                        row.put(AD_EXPIRATION_DATE, cal.getTime());
-                        break;
-                    }
-                    case 1: {
-                        cal.add(Calendar.MONTH, 3);
-                        row.put(AD_EXPIRATION_DATE, cal.getTime());
-                        break;
-                    }
-                    case 2: {
-                        cal.add(Calendar.YEAR, 1);
-                        row.put(AD_EXPIRATION_DATE, cal.getTime());
-                        break;
-                    }
-                }
-                for (int i = 0; i < content.pictures.size(); i++) {
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    content.pictures.get(i).compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    byte[] data = stream.toByteArray();
-                    ParseFile file = new ParseFile("photo.jpg", data);
-                    if (i == 0) {
-                        row.put(AD_PHOTO, file);
-                        // baner.put(PROMO_ACTIONS_ACTION_IMAGE, file);
-
-                    }
-                    ParseObject photoRow = new ParseObject(PHOTOS);
-                    photoRow.put(PHOTOS_PHOTO, file);
-                    photoRow.put(PHOTOS_IS_IN_USE, true);
-                    photoRow.save();
-                    relationToPhotos.add(photoRow);
-                }
-                relationUser.add(row); //привязываем объявление к пользователю
-                row.save();
-                //baner.save();
-                rowUser.save();
-                return true;
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
         public static void deleteAd(String id) {
             try {
                 ParseQuery<ParseObject> queryAd = ParseQuery.getQuery(AD);
@@ -307,8 +210,17 @@ public final class Parse {
     }
 
     public static class Data {
+        public static ParseUser currentUser = ParseUser.getCurrentUser();
+
         public static ArrayList<ParseObject> categoryList = new ArrayList<>();
         public static ArrayList<ParseObject> categoryAds = new ArrayList<>();
+        public static ArrayList<ParseObject> favorite = new ArrayList<>();
+        public static ArrayList<ParseObject> my = new ArrayList<>();
+        public static ArrayList<ParseObject> search = new ArrayList<>();
+        public static ArrayList<ParseObject> map = new ArrayList<>();
+        public static ArrayList<ParseObject> blackList = new ArrayList<>();
+        public static ArrayList<ParseObject> myContacts = new ArrayList<>();
+        public static ArrayList<ParseObject> history = new ArrayList<>();
     }
 
     public static final class Constants {

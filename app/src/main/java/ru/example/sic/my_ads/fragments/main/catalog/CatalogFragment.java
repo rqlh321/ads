@@ -1,14 +1,18 @@
 package ru.example.sic.my_ads.fragments.main.catalog;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ExpandableRecyclerViewAdapter;
@@ -28,20 +33,39 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_EN_TITLE;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_IS_ROOT;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_PARENT;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_RU_TITLE;
 import static ru.example.sic.my_ads.Constants.LANGUAGE;
 
 public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-
-    ExpandableRecyclerViewAdapter adapter;
     @BindView(R.id.expendeble_recycler_view)
-    RecyclerView expandableRecyclerView;
+    public RecyclerView expandableRecyclerView;
+
     @BindView(R.id.refresh)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    public SwipeRefreshLayout refresh;
+
+    @OnClick(R.id.add)
+    public void addCategory() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        final EditText en = new EditText(getContext());
+        linearLayout.addView(en);
+        final EditText ru = new EditText(getContext());
+        linearLayout.addView(ru);
+
+        builder.setView(linearLayout)
+                .setPositiveButton("add", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ParseObject category = new ParseObject(Catalog.class.getSimpleName());
+                        category.put(Catalog.EN_TITLE, en.getText().toString());
+                        category.put(Catalog.RU_TITLE, ru.getText().toString());
+                        category.put(Catalog.PARENT, "");
+                        category.saveInBackground();
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
+
+    }
+
 
     @Nullable
     @Override
@@ -49,9 +73,9 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
         final View view = inflater.inflate(R.layout.fragment_catalog, container, false);
         ButterKnife.bind(this, view);
         addCatalog(Parse.Data.categoryList);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        if(Parse.Data.categoryList.size()==0) {
-            mSwipeRefreshLayout.post(new Runnable() {
+        refresh.setOnRefreshListener(this);
+        if (Parse.Data.categoryList.size() == 0) {
+            refresh.post(new Runnable() {
                 @Override
                 public void run() {
                     onRefresh();
@@ -67,8 +91,7 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     @Override
                     public ArrayList<ParseObject> call(String language) {
                         try {
-                            ParseQuery<ParseObject> query = ParseQuery.getQuery(CATEGORY);
-                            query.orderByDescending(CATEGORY_IS_ROOT);
+                            ParseQuery<ParseObject> query = ParseQuery.getQuery(Catalog.class.getSimpleName());
                             return (ArrayList<ParseObject>) query.find();
                         } catch (Exception ex) {
                             ex.getMessage();
@@ -93,14 +116,14 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     public void onNext(final ArrayList<ParseObject> objects) {
                         Parse.Data.categoryList.addAll(objects);
                         addCatalog(objects);
-                        mSwipeRefreshLayout.setRefreshing(false);
+                        refresh.setRefreshing(false);
                     }
                 });
     }
 
     private void addCatalog(ArrayList<ParseObject> objects) {
         ArrayList<Catalog> catalogs = compileCatalogs(objects);
-        adapter = new ExpandableRecyclerViewAdapter(CatalogFragment.this, catalogs);
+        ExpandableRecyclerViewAdapter adapter = new ExpandableRecyclerViewAdapter(CatalogFragment.this, catalogs);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         expandableRecyclerView.setLayoutManager(linearLayoutManager);
         expandableRecyclerView.setAdapter(adapter);
@@ -109,17 +132,17 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private ArrayList<Catalog> compileCatalogs(ArrayList<ParseObject> objects) {
         ArrayList<Catalog> catalogs = new ArrayList<>();
         for (ParseObject object : objects) {
-            if (object.getBoolean(CATEGORY_IS_ROOT)) {
-                String ENTitle = object.getString(CATEGORY_EN_TITLE);
-                String RUTitle = object.getString(CATEGORY_RU_TITLE);
+            if (object.getString(Catalog.PARENT).isEmpty()) {
+                String ENTitle = object.getString(Catalog.EN_TITLE);
+                String RUTitle = object.getString(Catalog.RU_TITLE);
                 ArrayList<Category> subCatalog = new ArrayList<>();
                 Catalog catalog = new Catalog(new Category(ENTitle, RUTitle), subCatalog);
                 catalogs.add(catalog);
             } else {
-                String ENTitle = object.getString(CATEGORY_EN_TITLE);
-                String RUTitle = object.getString(CATEGORY_RU_TITLE);
+                String ENTitle = object.getString(Catalog.EN_TITLE);
+                String RUTitle = object.getString(Catalog.RU_TITLE);
                 for (Catalog catalog : catalogs) {
-                    String parent = object.getString(CATEGORY_PARENT);
+                    String parent = object.getString(Catalog.PARENT);
                     if (catalog.getCategory().getEn().equals(parent)) {
                         catalog.getChildItemList().add(new Category(ENTitle, RUTitle));
                         break;
@@ -132,7 +155,7 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-        mSwipeRefreshLayout.setRefreshing(true);
+        refresh.setRefreshing(true);
         Parse.Data.categoryList.clear();
         getCategory();
     }

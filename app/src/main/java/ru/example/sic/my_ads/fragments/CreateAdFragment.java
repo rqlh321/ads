@@ -26,61 +26,33 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.Utils;
 import ru.example.sic.my_ads.activity.MainActivity;
 import ru.example.sic.my_ads.fragments.main.catalog.CatalogFragment;
-
-import static ru.example.sic.my_ads.Constants.RC_GET_PICTURE;
-import static ru.example.sic.my_ads.Parse.Constants.AD;
-import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
-import static ru.example.sic.my_ads.Parse.Constants.AD_ALL_PHOTOS;
-import static ru.example.sic.my_ads.Parse.Constants.AD_AUTHOR_ID;
-import static ru.example.sic.my_ads.Parse.Constants.AD_CONTENT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_COORDINATES;
-import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
-import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
-import static ru.example.sic.my_ads.Parse.Constants.AD_IS_RECOMMENDED_BY_ADMIN;
-import static ru.example.sic.my_ads.Parse.Constants.AD_LIKES;
-import static ru.example.sic.my_ads.Parse.Constants.AD_PHOTO;
-import static ru.example.sic.my_ads.Parse.Constants.AD_SUBCATEGORY_OBJECT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_TITLE;
-import static ru.example.sic.my_ads.Parse.Constants.AD_VIEWED_AT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_VIEWS;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY;
-import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_EN_TITLE;
-import static ru.example.sic.my_ads.Parse.Constants.OBJECT_ID;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_IS_IN_USE;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_PHOTO;
-import static ru.example.sic.my_ads.Parse.Constants.USER;
-import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
-import static ru.example.sic.my_ads.Utils.scaleDown;
+import ru.example.sic.my_ads.models.Ad;
 
 public class CreateAdFragment extends Fragment {
     public static final String TAG = "CreateAdFirstStepFragment";
     public String category;
     @BindView(R.id.choose_category)
     public TextView categoryText;
-    //AdContent content = new AdContent();
     ArrayList<Bitmap> pictures = new ArrayList<>();
     GridViewAdapter gridAdapter;
     @BindView(R.id.address)
@@ -112,7 +84,7 @@ public class CreateAdFragment extends Fragment {
     @OnClick(R.id.addPicture)
     void addPhoto() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, RC_GET_PICTURE);
+        startActivityForResult(intent, Constants.RC_GET_PICTURE);
     }
 
     @OnClick(R.id.done)
@@ -128,94 +100,47 @@ public class CreateAdFragment extends Fragment {
                         progress.setCancelable(false);
                         progress.show();
 
-                        ParseQuery<ParseObject> queryUser = ParseQuery.getQuery(USER);
-                        queryUser.whereEqualTo(OBJECT_ID, ParseUser.getCurrentUser().getObjectId());
-                        queryUser.getFirstInBackground(new GetCallback<ParseObject>() {
+                        double latitude = 0;
+                        double longitude = 0;
+                        try {
+                            Geocoder geocoder = new Geocoder(getContext());
+                            List<Address> addresses = geocoder.getFromLocationName(address.getText().toString(), 1);
+                            if (addresses.size() > 0) {
+                                latitude = addresses.get(0).getLatitude();
+                                longitude = addresses.get(0).getLongitude();
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        final ParseObject row = new ParseObject(Ad.class.getSimpleName());
+
+                        row.put(Ad.AUTHOR_ID, ParseUser.getCurrentUser().getObjectId());
+                        row.put(Ad.VIEWS, 0);
+                        row.put(Ad.RECOMMENDED, false);
+                        row.put(Ad.COORDINATES, new ParseGeoPoint(latitude, longitude));
+                        row.put(Ad.CURRENCY, dropdownCurrency.getSelectedItem().toString());
+                        row.put(Ad.ADDRESS, address.getText().toString());
+                        row.put(Ad.TITLE, title.getText().toString());
+                        row.put(Ad.SUBCATEGORY, category);
+                        row.put(Ad.CONTENT, description.getText().toString());
+                        row.put(Ad.COST, Integer.parseInt(cost.getText().toString()));
+
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        pictures.get(0).compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        byte[] data = stream.toByteArray();
+                        ParseFile file = new ParseFile("photo.jpg", data);
+                        row.put(Ad.PHOTO, file);
+
+                        row.saveInBackground(new SaveCallback() {
                             @Override
-                            public void done(final ParseObject rowUser, ParseException e) {
-                                ParseQuery<ParseObject> queryCategory = ParseQuery.getQuery(CATEGORY);
-                                queryCategory.whereEqualTo(CATEGORY_EN_TITLE, category)
-                                        .getFirstInBackground(new GetCallback<ParseObject>() {
-                                            @Override
-                                            public void done(ParseObject subcategoryObjects, ParseException e) {
-                                                double latitude = 0;
-                                                double longitude = 0;
-                                                try {
-                                                    Geocoder geocoder = new Geocoder(getContext());
-                                                    List<Address> addresses = geocoder.getFromLocationName(address.getText().toString(), 1);
-                                                    if (addresses.size() > 0) {
-                                                        latitude = addresses.get(0).getLatitude();
-                                                        longitude = addresses.get(0).getLongitude();
-                                                    }
-                                                } catch (IOException ex) {
-                                                    ex.printStackTrace();
-                                                }
-                                                ParseGeoPoint point = new ParseGeoPoint(latitude, longitude);
-                                                final ParseObject row = new ParseObject(AD);
-
-//                ParseObject baner = new ParseObject(PROMO_ACTIONS);
-//                baner.put(PROMO_ACTIONS_ACTIVE, true);
-//                baner.put(PROMO_ACTIONS_EN_TITLE, "Test promo action!");
-//                baner.put(PROMO_ACTIONS_RU_TITLE, "Тестовая акция!");
-                                                row.put(AD_AUTHOR_ID, ParseUser.getCurrentUser());
-                                                row.put(AD_VIEWS, 0);
-                                                row.put(AD_VIEWED_AT, new Date());
-                                                row.put(AD_LIKES, 0);
-                                                row.put(AD_IS_RECOMMENDED_BY_ADMIN, false);
-                                                if (longitude != 0 && latitude != 0) {
-                                                    row.put(AD_COORDINATES, point);
-                                                }
-                                                row.put(AD_CURRENCY, dropdownCurrency.getSelectedItem().toString());
-                                                row.put(AD_ADDRESS, address.getText().toString());
-                                                row.put(AD_TITLE, title.getText().toString());
-                                                row.put(AD_SUBCATEGORY_OBJECT, subcategoryObjects);
-                                                row.put(AD_CONTENT, description.getText().toString());
-                                                row.put(AD_COST, Integer.parseInt(cost.getText().toString()));
-
-                                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                                pictures.get(0).compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                                                byte[] data = stream.toByteArray();
-                                                ParseFile file = new ParseFile("photo.jpg", data);
-                                                row.put(AD_PHOTO, file);
-                                                // baner.put(PROMO_ACTIONS_ACTION_IMAGE, file);
-                                                final ParseObject photoRow = new ParseObject(PHOTOS);
-                                                photoRow.put(PHOTOS_PHOTO, file);
-                                                photoRow.put(PHOTOS_IS_IN_USE, true);
-                                                ParseRelation<ParseObject> relationToPhotos = row.getRelation(AD_ALL_PHOTOS);
-                                                relationToPhotos.add(photoRow);
-                                                photoRow.saveInBackground(new SaveCallback() {
-                                                    @Override
-                                                    public void done(ParseException e) {
-                                                        if (e == null) {
-                                                            ParseRelation<ParseObject> relationUser = rowUser.getRelation(USER_ADS_OF_USER);
-                                                            relationUser.add(row); //привязываем объявление к пользователю
-                                                            row.saveInBackground(new SaveCallback() {
-                                                                @Override
-                                                                public void done(ParseException e) {
-                                                                    if (e == null) {
-                                                                        rowUser.saveInBackground(new SaveCallback() {
-                                                                            @Override
-                                                                            public void done(ParseException e) {
-                                                                                if (e == null) {
-                                                                                    getActivity().finish();
-                                                                                    getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                                                                                } else {
-                                                                                    progress.dismiss();
-                                                                                }
-                                                                            }
-                                                                        });
-                                                                    } else {
-                                                                        progress.dismiss();
-                                                                    }
-                                                                }
-                                                            });
-                                                            //baner.save();
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        });
-
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    progress.dismiss();
+                                    if (e == null) {
+                                        getActivity().finish();
+                                        getActivity().startActivity(new Intent(getContext(), MainActivity.class));
+                                    }
+                                }
                             }
                         });
                     } else
@@ -269,12 +194,12 @@ public class CreateAdFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_GET_PICTURE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == Constants.RC_GET_PICTURE && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             try {
                 Bitmap original = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImage);
                 if (pictures.size() < 4) {
-                    Bitmap resized = scaleDown(original, true);
+                    Bitmap resized = Utils.scaleDown(original, true);
                     pictures.add(resized);
                     gridAdapter.notifyDataSetChanged();
                     gridView.setVisibility(View.VISIBLE);

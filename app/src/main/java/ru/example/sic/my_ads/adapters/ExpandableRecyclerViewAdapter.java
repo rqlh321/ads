@@ -1,18 +1,23 @@
 package ru.example.sic.my_ads.adapters;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
+import com.parse.ParseObject;
 
 import java.util.List;
 
@@ -45,6 +50,7 @@ class CatalogChildViewHolder extends ChildViewHolder {
     public CatalogChildViewHolder(View itemView) {
         super(itemView);
         subCatalog = (TextView) itemView.findViewById(R.id.text1);
+
     }
 }
 
@@ -79,17 +85,35 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                 categoryViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ListAdsFragment listAdsFragment = new ListAdsFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable(EXTRA_SELECTED_CATEGORY, mCatalog.getCategory());
-                        bundle.putBoolean(EXTRA_IS_CATEGORY, true);
-                        listAdsFragment.setArguments(bundle);
-                        fragment.getFragmentManager()
-                                .beginTransaction()
-                                .hide(fragment)
-                                .add(R.id.container_catalog, listAdsFragment)
-                                .addToBackStack(null)
-                                .commit();
+//                        ListAdsFragment listAdsFragment = new ListAdsFragment();
+//                        Bundle bundle = new Bundle();
+//                        bundle.putParcelable(EXTRA_SELECTED_CATEGORY, mCatalog.getCategory());
+//                        bundle.putBoolean(EXTRA_IS_CATEGORY, true);
+//                        listAdsFragment.setArguments(bundle);
+//                        fragment.getFragmentManager()
+//                                .beginTransaction()
+//                                .hide(fragment)
+//                                .add(R.id.container_catalog, listAdsFragment)
+//                                .addToBackStack(null)
+//                                .commit();
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext());
+                        LinearLayout linearLayout = new LinearLayout(fragment.getContext());
+                        final EditText en = new EditText(fragment.getContext());
+                        linearLayout.addView(en);
+                        final EditText ru = new EditText(fragment.getContext());
+                        linearLayout.addView(ru);
+                        builder.setView(linearLayout)
+                                .setPositiveButton("add", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        ParseObject category = new ParseObject(Catalog.class.getSimpleName());
+                                        category.put(Catalog.EN_TITLE, en.getText().toString());
+                                        category.put(Catalog.RU_TITLE, ru.getText().toString());
+                                        category.put(Catalog.PARENT, mCatalog.getCategory().getEn());
+                                        category.saveInBackground();
+                                        dialog.dismiss();
+                                    }
+                                });
+                        builder.create().show();
                     }
                 });
                 break;
