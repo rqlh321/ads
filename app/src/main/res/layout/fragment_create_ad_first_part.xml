@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nestedScroll"
     android:layout_width="match_parent"
@@ -8,9 +8,10 @@
     android:layout_below="@+id/appbar"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/choose_category"
@@ -86,11 +87,10 @@
             android:id="@+id/symbols_left"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/description"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:gravity="right|center_vertical"
+            android:gravity="end|center_vertical"
             android:padding="10dp"
             android:textColor="@color/mainColor" />
 
@@ -98,7 +98,6 @@
             android:id="@+id/payment"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_below="@+id/symbols_left"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
@@ -117,7 +116,6 @@
                 android:textSize="18sp" />
 
             <Spinner
-
                 android:id="@+id/currency"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -129,118 +127,48 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/type"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/payment"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical">
+            android:layout_margin="10dp">
 
-            <TextView
+            <ImageView
+                android:id="@+id/photo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/validity"
-                android:textColor="@color/mainColor"
-                android:textSize="18sp" />
-
-            <RadioGroup
-                android:id="@+id/how_long"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/one"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/switch_button"
-                    android:button="@android:color/transparent"
-                    android:gravity="center"
-                    android:text="@string/one_m"
-                    android:textColor="@drawable/text_color_selector"
-                    android:textSize="16sp" />
-
-                <RadioButton
-                    android:id="@+id/three"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/switch_button_m"
-                    android:button="@android:color/transparent"
-                    android:gravity="center"
-                    android:text="@string/three_m"
-                    android:textColor="@drawable/text_color_selector"
-                    android:textSize="16sp" />
-
-                <RadioButton
-                    android:id="@+id/ever"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/switch_button_r"
-                    android:button="@android:color/transparent"
-                    android:gravity="center"
-                    android:text="@string/ever"
-                    android:textColor="@drawable/text_color_selector"
-                    android:textSize="16sp" />
-            </RadioGroup>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/type"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <GridView
-                android:id="@+id/gridView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/list_item_avatar_size"
-                android:numColumns="5"
+                android:layout_height="300dp"
+                android:layout_centerInParent="true"
+                android:scaleType="centerCrop"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/add_photo_text"
+            <ImageView
+                android:id="@+id/removePhoto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:text="@string/add_photos_text"
-                android:textSize="18sp" />
+                android:layout_centerInParent="true"
+                android:src="@android:drawable/ic_delete"
+                android:visibility="gone" />
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/addPicture"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:text="@string/add_pictures_button"
-                android:textAllCaps="false"
-                android:textColor="@color/primaryColor"
-                android:textSize="18sp" />
+        <TextView
+            android:id="@+id/addPicture"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/add_pictures_button"
+            android:textAllCaps="false"
+            android:textColor="@color/primaryColor"
+            android:textSize="18sp" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/done"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:src="@drawable/ic_done" />
-        </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_done" />
+    </LinearLayout>
 
-    </RelativeLayout>
-
-</android.support.v4.widget.NestedScrollView>
+</ScrollView>

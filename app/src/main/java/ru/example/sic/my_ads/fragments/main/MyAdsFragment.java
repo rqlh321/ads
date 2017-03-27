@@ -1,7 +1,9 @@
 package ru.example.sic.my_ads.fragments.main;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,12 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,25 +32,23 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.activity.MainActivity;
-import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.activity.CreateAdActivity;
 import ru.example.sic.my_ads.adapters.MyAdsAdapter;
-import ru.example.sic.my_ads.fragments.CreateAdFragment;
 import ru.example.sic.my_ads.models.Ad;
 
 public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    public static final String[] PREVIEW_KEYS = new String[]{Ad.PHOTO, Ad.TITLE, Ad.AUTHOR_ID};
-
+    public static final String[] PREVIEW_KEYS = new String[]{Ad.TITLE, Ad.PHOTO, Ad.COST, Ad.CURRENCY, Ad.AUTHOR_ID};
+    private SharedPreferences prefs;
+    private Gson gson = new Gson();
     private MyAdsAdapter adapter;
-    private ArrayList<Ad> my;
+    public ArrayList<Ad> my;
 
     @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    public RecyclerView recyclerView;
 
     @OnClick(R.id.add_ad)
     void createAd() {
-        Intent intent = new Intent(getContext(), SupportActivity.class);
-        intent.putExtra(Constants.EXTRA_SHAPE, CreateAdFragment.TAG);
+        Intent intent = new Intent(getContext(), CreateAdActivity.class);
         startActivity(intent);
     }
 
@@ -54,10 +57,20 @@ public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_ads, container, false);
         ButterKnife.bind(this, view);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String jsonString = prefs.getString(Constants.MY_ADS, null);
+        if (jsonString != null) {
+            Type type = new TypeToken<List<Ad>>() {
+            }.getType();
+            my = gson.fromJson(jsonString, type);
+        } else {
+            my = new ArrayList<>();
+            getAdsList();
+        }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        my = ((MainActivity) getActivity()).my;
         adapter = new MyAdsAdapter(this, my);
         recyclerView.setAdapter(adapter);
 
@@ -65,17 +78,23 @@ public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getAdsList();
+    public void onDestroyView() {
+        super.onDestroyView();
+        prefs.edit()
+                .putString(Constants.MY_ADS, gson.toJson(my))
+                .apply();
+    }
+
+    @Override
+    public void onRefresh() {
+
     }
 
     private void getAdsList() {
         ParseQuery.getQuery(Ad.class.getSimpleName())
                 .whereEqualTo(Ad.AUTHOR_ID, ParseUser.getCurrentUser().getObjectId())
-                .selectKeys(new HashSet<>(Arrays.asList(PREVIEW_KEYS)))
-                .setLimit(10)
                 .orderByDescending(Ad.CREATED_AT)
+                .selectKeys(new HashSet<>(Arrays.asList(PREVIEW_KEYS)))
                 .findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> results, ParseException e) {
@@ -90,10 +109,5 @@ public class MyAdsFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         }
                     }
                 });
-    }
-
-    @Override
-    public void onRefresh() {
-
     }
 }

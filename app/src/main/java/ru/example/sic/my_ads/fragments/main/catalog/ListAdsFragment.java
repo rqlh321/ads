@@ -21,6 +21,7 @@ import ru.example.sic.my_ads.EndlessRecyclerOnScrollListener;
 import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ListAdsAdapter;
+import ru.example.sic.my_ads.models.Ad;
 import ru.example.sic.my_ads.models.Category;
 import rx.Observable;
 import rx.Observer;
@@ -40,6 +41,8 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private boolean isCategory;
     private ListAdsAdapter adapter;
     private ArrayList<ParseObject> subcategoryObjects = new ArrayList<>();
+    private ArrayList<Ad> categoryAds;
+
     @OnClick(R.id.show_on_map)
     void onMapClick() {
         getFragmentManager().beginTransaction()
@@ -48,17 +51,20 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 .addToBackStack(null)
                 .commit();
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_list_ads, container, false);
         ButterKnife.bind(this, view);
-        category = getArguments().getParcelable(EXTRA_SELECTED_CATEGORY);
+        category = (Category) getArguments().getSerializable(EXTRA_SELECTED_CATEGORY);
         isCategory = getArguments().getBoolean(EXTRA_IS_CATEGORY, false);
+
+//        categoryAds = ((MainActivity) getActivity()).categoryAds;
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ListAdsAdapter(this, Parse.Data.categoryAds, R.id.container_catalog);
+        adapter = new ListAdsAdapter(this, categoryAds, R.id.container_catalog);
         recyclerView.setAdapter(adapter);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -80,18 +86,18 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onRefresh() {
         mSwipeRefreshLayout.setRefreshing(true);
-        Parse.Data.categoryAds.clear();
+        categoryAds.clear();
         adapter.notifyDataSetChanged();
         getAdsList();
     }
 
     private void getAdsList() {
-        Observable.just(Parse.Data.categoryAds.size())
+        Observable.just(categoryAds.size())
                 .map(new Func1<Integer, ArrayList<ParseObject>>() {
                     @Override
                     public ArrayList<ParseObject> call(Integer integer) {
                         if (subcategoryObjects.size() == 0) {
-                            subcategoryObjects = Parse.Request.getSubGroupsList(category.getEn(), isCategory);
+                            subcategoryObjects = Parse.Request.getSubGroupsList(category.en, isCategory);
                         }
                         return Parse.Request.getAdsBySubcategorys(subcategoryObjects, integer);
 
@@ -112,7 +118,7 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
                     @Override
                     public void onNext(final ArrayList<ParseObject> objects) {
-                        Parse.Data.categoryAds.addAll(objects);
+//                        categoryAds.addAll(objects);
                         adapter.notifyDataSetChanged();
                         mSwipeRefreshLayout.setRefreshing(false);
                     }

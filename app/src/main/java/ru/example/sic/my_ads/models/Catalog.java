@@ -5,10 +5,6 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import java.util.List;
 
 public class Catalog implements ParentListItem {
-    public static final String PARENT = "parent";
-    public static final String EN_TITLE = "en";
-    public static final String RU_TITLE = "ru";
-
     private List<Category> subCategoryList;
     private Category mCategory;
 

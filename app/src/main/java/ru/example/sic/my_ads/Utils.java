@@ -5,10 +5,6 @@ import android.graphics.Bitmap;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by sic on 30.09.2016.
- */
-
 public final class Utils {
     final static float MAX_IMAGE_SIZE = 800;
 

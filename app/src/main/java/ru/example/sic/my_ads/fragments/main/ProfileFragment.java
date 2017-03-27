@@ -15,7 +15,6 @@ import com.parse.ParseUser;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 
 public class ProfileFragment extends Fragment {
@@ -63,9 +62,9 @@ public class ProfileFragment extends Fragment {
         } else {
             person.check(R.id.organization);
         }
-        name.setText(Parse.Data.currentUser.getString(NAME));
-        phone.setText(Parse.Data.currentUser.getString(PHONE));
-        email.setText(Parse.Data.currentUser.getString(EMAIL));
+        name.setText(ParseUser.getCurrentUser().getString(NAME));
+        phone.setText(ParseUser.getCurrentUser().getString(PHONE));
+        email.setText(ParseUser.getCurrentUser().getString(EMAIL));
     }
 
 }

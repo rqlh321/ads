@@ -60,7 +60,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 return false;
             }
         });
-        getCoordinates(Parse.Data.categoryAds);
+        //getCoordinates(categoryAds);
     }
 
     void addMarker(double lat, double lng, ParseObject ad) {

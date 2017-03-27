@@ -181,11 +181,11 @@
         <item quantity="many">Пароль должен быть не менее %d символов</item>
     </plurals>
     <plurals name="days_count">
-        <item quantity="zero">Сегодня</item>
-        <item quantity="one">%d день назад</item>
-        <item quantity="few">%d дня назад</item>
-        <item quantity="many">%d дней назад</item>
-        <item quantity="other">%d дней назад</item>
+        <item quantity="zero"> cегодня</item>
+        <item quantity="one"> %d день назад</item>
+        <item quantity="few"> %d дня назад</item>
+        <item quantity="many"> %d дней назад</item>
+        <item quantity="other"> %d дней назад</item>
     </plurals>
     <string name="com_parse_ui_confirm_password_input_hint">Введите пароль повторно</string>
     <string name="com_parse_ui_create_account_button_label">Создать аккаунт</string>
@@ -276,4 +276,8 @@
     </string-array>
     <string name="name">Имя</string>
     <string name="app_name">Мои объявления</string>
+    <string name="title_activity_maps">Карта</string>
+    <string name="create_ad_text">Скоро ваше объявление будет добавлено</string>
+    <string name="no_photo">Вы должны добавить фотографию</string>
+    <string name="bad_address">Такой локации не существует</string>
 </resources>

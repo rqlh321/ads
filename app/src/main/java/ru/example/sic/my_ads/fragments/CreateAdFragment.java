@@ -1,8 +1,6 @@
 package ru.example.sic.my_ads.fragments;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
@@ -19,23 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,23 +37,19 @@ import butterknife.OnClick;
 import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.Utils;
-import ru.example.sic.my_ads.activity.MainActivity;
 import ru.example.sic.my_ads.fragments.main.catalog.CatalogFragment;
 import ru.example.sic.my_ads.models.Ad;
 
 public class CreateAdFragment extends Fragment {
-    public static final String TAG = "CreateAdFirstStepFragment";
+    public static final String TAG = "CreateAdFragment";
+    private Bitmap resizedPhoto;
     public String category;
     @BindView(R.id.choose_category)
     public TextView categoryText;
-    ArrayList<Bitmap> pictures = new ArrayList<>();
-    GridViewAdapter gridAdapter;
     @BindView(R.id.address)
     EditText address;
     @BindView(R.id.currency)
     Spinner dropdownCurrency;
-    @BindView(R.id.how_long)
-    RadioGroup howLong;
     @BindView(R.id.title)
     EditText title;
     @BindView(R.id.description)
@@ -69,8 +58,21 @@ public class CreateAdFragment extends Fragment {
     EditText cost;
     @BindView(R.id.symbols_left)
     TextView symbolsLeft;
-    @BindView(R.id.gridView)
-    GridView gridView;
+    @BindView(R.id.photo)
+    ImageView photo;
+    @BindView(R.id.removePhoto)
+    ImageView removePhoto;
+    @BindView(R.id.addPicture)
+    TextView addPhoto;
+
+    @OnClick(R.id.removePhoto)
+    public void removePhoto() {
+        photo.setVisibility(View.GONE);
+        removePhoto.setVisibility(View.GONE);
+        addPhoto.setVisibility(View.VISIBLE);
+        resizedPhoto = null;
+        photo.setImageBitmap(null);
+    }
 
     @OnClick(R.id.choose_category)
     void chooseCategory() {
@@ -93,56 +95,42 @@ public class CreateAdFragment extends Fragment {
             if (!title.getText().toString().isEmpty()) {
                 if (!description.getText().toString().isEmpty()) {
                     if (!cost.getText().toString().isEmpty()) {
-                        final ProgressDialog progress = new ProgressDialog(getContext());
-                        progress.setTitle(getString(R.string.loading));
-                        progress.setMessage(getString(R.string.wait_loading));
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.setCancelable(false);
-                        progress.show();
-
-                        double latitude = 0;
-                        double longitude = 0;
-                        try {
-                            Geocoder geocoder = new Geocoder(getContext());
-                            List<Address> addresses = geocoder.getFromLocationName(address.getText().toString(), 1);
-                            if (addresses.size() > 0) {
-                                latitude = addresses.get(0).getLatitude();
-                                longitude = addresses.get(0).getLongitude();
+                        if (resizedPhoto != null) {
+                            List<Address> addresses = null;
+                            try {
+                                Geocoder geocoder = new Geocoder(getContext());
+                                addresses = geocoder.getFromLocationName(address.getText().toString(), 1);
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
                             }
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        final ParseObject row = new ParseObject(Ad.class.getSimpleName());
+                            if (addresses != null && addresses.size() > 0) {
+                                double latitude = addresses.get(0).getLatitude();
+                                double longitude = addresses.get(0).getLongitude();
+                                final ParseObject row = new ParseObject(Ad.class.getSimpleName());
+                                row.put(Ad.AUTHOR_ID, ParseUser.getCurrentUser().getObjectId());
+                                row.put(Ad.VIEWS, 0);
+                                row.put(Ad.RECOMMENDED, false);
+                                row.put(Ad.COORDINATES, new ParseGeoPoint(latitude, longitude));
+                                row.put(Ad.CURRENCY, dropdownCurrency.getSelectedItem().toString());
+                                row.put(Ad.ADDRESS, address.getText().toString());
+                                row.put(Ad.TITLE, title.getText().toString());
+                                row.put(Ad.SUBCATEGORY, category);
+                                row.put(Ad.CONTENT, description.getText().toString());
+                                row.put(Ad.COST, Integer.parseInt(cost.getText().toString()));
 
-                        row.put(Ad.AUTHOR_ID, ParseUser.getCurrentUser().getObjectId());
-                        row.put(Ad.VIEWS, 0);
-                        row.put(Ad.RECOMMENDED, false);
-                        row.put(Ad.COORDINATES, new ParseGeoPoint(latitude, longitude));
-                        row.put(Ad.CURRENCY, dropdownCurrency.getSelectedItem().toString());
-                        row.put(Ad.ADDRESS, address.getText().toString());
-                        row.put(Ad.TITLE, title.getText().toString());
-                        row.put(Ad.SUBCATEGORY, category);
-                        row.put(Ad.CONTENT, description.getText().toString());
-                        row.put(Ad.COST, Integer.parseInt(cost.getText().toString()));
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                resizedPhoto.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                byte[] data = stream.toByteArray();
+                                ParseFile file = new ParseFile("photo.jpg", data);
+                                row.put(Ad.PHOTO, file);
+                                row.saveInBackground();
 
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        pictures.get(0).compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                        byte[] data = stream.toByteArray();
-                        ParseFile file = new ParseFile("photo.jpg", data);
-                        row.put(Ad.PHOTO, file);
-
-                        row.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    progress.dismiss();
-                                    if (e == null) {
-                                        getActivity().finish();
-                                        getActivity().startActivity(new Intent(getContext(), MainActivity.class));
-                                    }
-                                }
-                            }
-                        });
+                                Toast.makeText(getActivity(), getString(R.string.create_ad_text), Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
+                            } else
+                                Toast.makeText(getContext(), getString(R.string.bad_address), Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(getContext(), getString(R.string.no_photo), Toast.LENGTH_SHORT).show();
                     } else
                         Toast.makeText(getContext(), getString(R.string.empty_cost), Toast.LENGTH_SHORT).show();
                 } else
@@ -163,7 +151,6 @@ public class CreateAdFragment extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(R.array.currencyType));
         dropdownCurrency.setAdapter(adapterCurrency);
-        howLong.check(R.id.one);
         symbolsLeft.setText(getString(R.string.symbols_left, 800 - description.getText().length()));
         description.addTextChangedListener(new TextWatcher() {
             @Override
@@ -182,11 +169,16 @@ public class CreateAdFragment extends Fragment {
             }
         });
 
-        gridAdapter = new GridViewAdapter(getContext(), R.layout.grid_item_layout, pictures);
-        gridView.setAdapter(gridAdapter);
         if (savedInstanceState != null) {
+            resizedPhoto = savedInstanceState.getParcelable("resizedPhoto");
+            photo.setImageBitmap(resizedPhoto);
             category = savedInstanceState.getString("category");
             categoryText.setText(savedInstanceState.getString("categoryText"));
+        }
+        if (resizedPhoto != null) {
+            removePhoto.setVisibility(View.VISIBLE);
+            addPhoto.setVisibility(View.GONE);
+            photo.setVisibility(View.VISIBLE);
         }
         return view;
     }
@@ -198,14 +190,11 @@ public class CreateAdFragment extends Fragment {
             Uri selectedImage = data.getData();
             try {
                 Bitmap original = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImage);
-                if (pictures.size() < 4) {
-                    Bitmap resized = Utils.scaleDown(original, true);
-                    pictures.add(resized);
-                    gridAdapter.notifyDataSetChanged();
-                    gridView.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(getContext(), getString(R.string.pictures_quot), Toast.LENGTH_SHORT).show();
-                }
+                resizedPhoto = Utils.scaleDown(original, true);
+                photo.setImageBitmap(resizedPhoto);
+                addPhoto.setVisibility(View.GONE);
+                removePhoto.setVisibility(View.VISIBLE);
+                photo.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -214,54 +203,10 @@ public class CreateAdFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putString("categoryText", categoryText.getText().toString());
         outState.putString("category", category);
-        super.onSaveInstanceState(outState);
+        outState.putParcelable("resizedPhoto", resizedPhoto);
     }
 
-    class GridViewAdapter extends ArrayAdapter {
-        private Context context;
-        private int layoutResourceId;
-        private ArrayList<Bitmap> data;
-
-        public GridViewAdapter(Context context, int layoutResourceId, ArrayList<Bitmap> data) {
-            super(context, layoutResourceId, data);
-            this.layoutResourceId = layoutResourceId;
-            this.context = context;
-            this.data = data;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View row = convertView;
-            GridViewAdapter.ViewHolder holder;
-
-            if (row == null) {
-                LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-                row = inflater.inflate(layoutResourceId, parent, false);
-                holder = new GridViewAdapter.ViewHolder();
-                holder.image = (ImageView) row.findViewById(R.id.image);
-                holder.delete = (ImageView) row.findViewById(R.id.delete);
-                row.setTag(holder);
-            } else {
-                holder = (GridViewAdapter.ViewHolder) row.getTag();
-            }
-
-            Bitmap item = data.get(position);
-            holder.image.setImageBitmap(item);
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    pictures.remove(position);
-                    gridAdapter.notifyDataSetChanged();
-                }
-            });
-            return row;
-        }
-
-        class ViewHolder {
-            ImageView image;
-            ImageView delete;
-        }
-    }
 }

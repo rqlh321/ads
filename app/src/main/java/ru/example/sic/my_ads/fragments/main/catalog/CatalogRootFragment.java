@@ -15,9 +15,11 @@ public class CatalogRootFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getFragmentManager().beginTransaction()
-                .add(R.id.container_catalog, new CatalogFragment(), TAG)
-                .commit();
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container_catalog, new CatalogFragment(), TAG)
+                    .commit();
+        }
         return inflater.inflate(R.layout.fragment_catalog_place_holder, container, false);
     }
 

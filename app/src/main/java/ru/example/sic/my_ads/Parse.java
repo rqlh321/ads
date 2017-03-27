@@ -1,39 +1,21 @@
 package ru.example.sic.my_ads;
 
-import android.graphics.Bitmap;
-
 import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import ru.example.sic.my_ads.models.Ad;
 
 import static ru.example.sic.my_ads.Parse.Constants.AD;
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;
-import static ru.example.sic.my_ads.Parse.Constants.AD_ALL_PHOTOS;
 import static ru.example.sic.my_ads.Parse.Constants.AD_AUTHOR_ID;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CONTENT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_COORDINATES;
 import static ru.example.sic.my_ads.Parse.Constants.AD_COST;
 import static ru.example.sic.my_ads.Parse.Constants.AD_CREATED_AT;
-import static ru.example.sic.my_ads.Parse.Constants.AD_CURRENCY;
-import static ru.example.sic.my_ads.Parse.Constants.AD_EXPIRATION_DATE;
-import static ru.example.sic.my_ads.Parse.Constants.AD_IS_RECOMMENDED_BY_ADMIN;
-import static ru.example.sic.my_ads.Parse.Constants.AD_LIKES;
-import static ru.example.sic.my_ads.Parse.Constants.AD_PHOTO;
 import static ru.example.sic.my_ads.Parse.Constants.AD_SUBCATEGORY_OBJECT;
 import static ru.example.sic.my_ads.Parse.Constants.AD_TITLE;
-import static ru.example.sic.my_ads.Parse.Constants.AD_VIEWED_AT;
 import static ru.example.sic.my_ads.Parse.Constants.AD_VIEWS;
 import static ru.example.sic.my_ads.Parse.Constants.BLACKLIST;
 import static ru.example.sic.my_ads.Parse.Constants.BLACKLIST_BLOCKED_USER;
@@ -42,12 +24,7 @@ import static ru.example.sic.my_ads.Parse.Constants.CATEGORY;
 import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_EN_TITLE;
 import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_IS_ROOT;
 import static ru.example.sic.my_ads.Parse.Constants.CATEGORY_PARENT;
-import static ru.example.sic.my_ads.Parse.Constants.OBJECT_ID;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_IS_IN_USE;
-import static ru.example.sic.my_ads.Parse.Constants.PHOTOS_PHOTO;
 import static ru.example.sic.my_ads.Parse.Constants.USER;
-import static ru.example.sic.my_ads.Parse.Constants.USER_ADS_OF_USER;
 import static ru.example.sic.my_ads.Parse.Constants.USER_IS_PERSON;
 
 public final class Parse {
@@ -186,41 +163,6 @@ public final class Parse {
             return new ArrayList<>();
         }
 
-        public static void deleteAd(String id) {
-            try {
-                ParseQuery<ParseObject> queryAd = ParseQuery.getQuery(AD);
-                ParseObject ad = queryAd.whereEqualTo(OBJECT_ID, id).getFirst();
-                List<ParseObject> photos = ad.getRelation(AD_ALL_PHOTOS).getQuery().find();
-                for (ParseObject photo : photos) {
-                    photo.put(PHOTOS_IS_IN_USE, false);
-                    photo.saveInBackground();
-                }
-                ad.deleteInBackground();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public static void increaseViews(ParseObject object) {
-            object.increment(AD_VIEWS);
-            object.put(AD_VIEWED_AT, new Date());
-            object.saveInBackground();
-        }
-
-    }
-
-    public static class Data {
-        public static ParseUser currentUser = ParseUser.getCurrentUser();
-
-        public static ArrayList<ParseObject> categoryList = new ArrayList<>();
-        public static ArrayList<ParseObject> categoryAds = new ArrayList<>();
-        public static ArrayList<ParseObject> favorite = new ArrayList<>();
-        public static ArrayList<ParseObject> my = new ArrayList<>();
-        public static ArrayList<ParseObject> search = new ArrayList<>();
-        public static ArrayList<ParseObject> map = new ArrayList<>();
-        public static ArrayList<ParseObject> blackList = new ArrayList<>();
-        public static ArrayList<ParseObject> myContacts = new ArrayList<>();
-        public static ArrayList<ParseObject> history = new ArrayList<>();
     }
 
     public static final class Constants {

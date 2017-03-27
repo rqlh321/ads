@@ -467,11 +467,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name">Name</string>
-    <string name="email">Email</string>
+    <string name="email" translatable="false">Email</string>
     <plurals name="days_count">
-        <item quantity="zero">Today</item>
-        <item quantity="one">%s day ago</item>
-        <item quantity="other">%s days ago</item>
+        <item quantity="zero"> today</item>
+        <item quantity="one"> %s day ago</item>
+        <item quantity="other"> %s days ago</item>
     </plurals>
     <string-array name="how_long">
         <item>One Month</item>
@@ -479,5 +479,8 @@
         <item>In perpetuity</item>
     </string-array>
     <string name="com_parse_ui_login_help_email_input_hint">Email</string>
-    <string name="sms">Sms</string>
+    <string name="sms" translatable="false">Sms</string>
+    <string name="create_ad_text">Soon your ad will be created</string>
+    <string name="no_photo">No photo - No Ad</string>
+    <string name="bad_address">No such location</string>
 </resources>

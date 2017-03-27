@@ -13,17 +13,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.activity.SupportActivity;
-import ru.example.sic.my_ads.fragments.DetailFragment;
+import ru.example.sic.my_ads.activity.ViewActivity;
 import ru.example.sic.my_ads.fragments.main.MyAdsFragment;
 import ru.example.sic.my_ads.models.Ad;
 
-import static ru.example.sic.my_ads.Constants.EXTRA_SHAPE;
+import static ru.example.sic.my_ads.Parse.Constants.AD;
+import static ru.example.sic.my_ads.Parse.Constants.OBJECT_ID;
 
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> {
     private ArrayList<Ad> ads;
@@ -42,12 +46,12 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyAdsAdapter.ViewHolder holder, final int position) {
-        Glide.with(holder.mImageView.getContext())
-                .load(ads.get(position).photoUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .dontAnimate()
-                .fitCenter()
+        Glide.with(fragment.getContext())
+                .load(ads.get(position).photo)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
                 .into(holder.mImageView);
+
         holder.mTextView.setText(ads.get(position).title);
         holder.mDeleteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +70,16 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> 
                 alert.setView(layout);
                 alert.setPositiveButton(fragment.getString(R.string.delete), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        Parse.Request.deleteAd(ads.get(position).id);
+                        ParseQuery.getQuery(AD)
+                                .whereEqualTo(OBJECT_ID, ads.get(position).id)
+                                .getFirstInBackground(new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(final ParseObject ad, ParseException e) {
+                                        if (e == null) {
+                                            ad.deleteInBackground();
+                                        }
+                                    }
+                                });
                         ads.remove(position);
                         notifyDataSetChanged();
                     }
@@ -81,9 +94,8 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(fragment.getContext(), SupportActivity.class);
-                intent.putExtra(EXTRA_SHAPE, DetailFragment.TAG);
-                intent.putExtra("id", ads.get(position).id);
+                Intent intent = new Intent(fragment.getContext(), ViewActivity.class);
+                intent.putExtra("ad", ads.get(position));
                 fragment.startActivity(intent);
             }
         });

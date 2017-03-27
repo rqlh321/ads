@@ -85,8 +85,8 @@ public class SearchSimpleFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ListAdsAdapter(getParentFragment(), resultList, R.id.support_container);
-        recyclerView.setAdapter(adapter);
+//        adapter = new ListAdsAdapter(getParentFragment(), resultList, R.id.support_container);
+//        recyclerView.setAdapter(adapter);
 
         return view;
     }

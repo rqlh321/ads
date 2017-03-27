@@ -22,7 +22,7 @@ import com.parse.ParseObject;
 import java.util.List;
 
 import ru.example.sic.my_ads.R;
-import ru.example.sic.my_ads.activity.SupportActivity;
+import ru.example.sic.my_ads.activity.CreateAdActivity;
 import ru.example.sic.my_ads.fragments.CreateAdFragment;
 import ru.example.sic.my_ads.fragments.main.catalog.CatalogRootFragment;
 import ru.example.sic.my_ads.fragments.main.catalog.ListAdsFragment;
@@ -79,7 +79,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
     @Override
     public void onBindParentViewHolder(CatalogParentViewHolder categoryViewHolder, final int position, final ParentListItem parentListItem) {
         final Catalog mCatalog = (Catalog) parentListItem;
-        categoryViewHolder.textView.setText(LANGUAGE.equals("ru") ? mCatalog.getCategory().getRu() : mCatalog.getCategory().getEn());
+        categoryViewHolder.textView.setText(LANGUAGE.equals("ru") ? mCatalog.getCategory().ru : mCatalog.getCategory().en);
         switch (fragment.getTag()) {
             case CatalogRootFragment.TAG:
                 categoryViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
@@ -105,10 +105,10 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                         builder.setView(linearLayout)
                                 .setPositiveButton("add", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        ParseObject category = new ParseObject(Catalog.class.getSimpleName());
-                                        category.put(Catalog.EN_TITLE, en.getText().toString());
-                                        category.put(Catalog.RU_TITLE, ru.getText().toString());
-                                        category.put(Catalog.PARENT, mCatalog.getCategory().getEn());
+                                        ParseObject category = new ParseObject(Category.class.getSimpleName());
+                                        category.put(Category.EN, en.getText().toString());
+                                        category.put(Category.RU, ru.getText().toString());
+                                        category.put(Category.PARENT, mCatalog.getCategory().en);
                                         category.saveInBackground();
                                         dialog.dismiss();
                                     }
@@ -126,16 +126,16 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
     @Override
     public void onBindChildViewHolder(CatalogChildViewHolder subCategoryViewHolder, int position, Object childListItem) {
         final Category mSubCatalogItem = (Category) childListItem;
-        subCategoryViewHolder.subCatalog.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.getRu() : mSubCatalogItem.getEn());
+        subCategoryViewHolder.subCatalog.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
         switch (fragment.getTag()) {
             case CreateAdFragment.TAG:
                 subCategoryViewHolder.subCatalog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         CreateAdFragment createAdFragment = (CreateAdFragment) fragment.getFragmentManager()
-                                .findFragmentByTag(SupportActivity.TAG);
-                        createAdFragment.categoryText.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.getRu() : mSubCatalogItem.getEn());
-                        createAdFragment.category = mSubCatalogItem.getEn();
+                                .findFragmentByTag(CreateAdActivity.TAG);
+                        createAdFragment.categoryText.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
+                        createAdFragment.category = mSubCatalogItem.en;
                         fragment.getActivity().onBackPressed();
                     }
                 });
@@ -146,7 +146,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                     public void onClick(View view) {
                         ListAdsFragment listAdsFragment = new ListAdsFragment();
                         Bundle bundle = new Bundle();
-                        bundle.putParcelable(EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
+                        bundle.putSerializable(EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
                         bundle.putBoolean(EXTRA_IS_CATEGORY, false);
                         listAdsFragment.setArguments(bundle);
                         fragment.getFragmentManager()
