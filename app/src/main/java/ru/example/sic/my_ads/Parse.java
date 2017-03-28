@@ -31,111 +31,11 @@ public final class Parse {
 
     public static class Request {
 
-        public static ArrayList<ParseObject> getSearchResult(String address, String subcategory, int isPerson, int whereToSearch, String textForSearch, String costStart, String costEnd) {
-            try {
-                ParseQuery query = ParseQuery.getQuery(AD);
-                if (!costStart.equals("")) {
-                    int value = Integer.parseInt(costStart);
-                    query.whereGreaterThanOrEqualTo(AD_COST, value);
-                }
-                if (!costEnd.equals("")) {
-                    int value = Integer.parseInt(costEnd);
-                    query.whereLessThanOrEqualTo(AD_COST, value);
-                }
-                if (!textForSearch.equals("")) {
-                    if (whereToSearch == 0) {
-                        ParseQuery<ParseObject> queryContent = ParseQuery.getQuery(AD);
-                        ParseQuery<ParseObject> queryTitle = ParseQuery.getQuery(AD);
-
-                        queryContent.whereMatches(AD_CONTENT, "(" + textForSearch + ")", "i");
-                        queryTitle.whereMatches(AD_TITLE, "(" + textForSearch + ")", "i");
-
-                        List<ParseQuery<ParseObject>> queries = new ArrayList<>();
-                        queries.add(queryContent);
-                        queries.add(queryTitle);
-
-                        query = ParseQuery.or(queries);
-                    }
-                    if (whereToSearch == 2) {
-                        query.whereMatches(AD_CONTENT, "(" + textForSearch + ")", "i");
-                    }
-                    if (whereToSearch == 1) {
-                        query.whereMatches(AD_TITLE, "(" + textForSearch + ")", "i");
-                    }
-                }
-
-                if (!address.equals("")) {
-                    query.whereMatches(AD_ADDRESS, "(" + address + ")", "i");
-                }
-                if (!subcategory.equals("")) {
-                    ParseQuery categoryQuery = ParseQuery.getQuery(CATEGORY);
-                    categoryQuery.whereEqualTo(CATEGORY_IS_ROOT, false);
-                    ArrayList<ParseObject> subcategoryObj = (ArrayList<ParseObject>) categoryQuery.whereEqualTo(CATEGORY_EN_TITLE, subcategory).find();
-                    if (subcategoryObj.size() > 0) {
-                        query.whereEqualTo(AD_SUBCATEGORY_OBJECT, subcategoryObj.get(0));
-                    } else {
-                        //если был выбран пункт вся группа
-                        query.whereContainedIn(AD_SUBCATEGORY_OBJECT, getSubGroupsList(subcategory, false));
-                    }
-                }
-
-                if (isPerson != 2) {
-                    ParseQuery userQuery = ParseQuery.getQuery(USER);
-                    if (isPerson == 1) {
-                        ParseQuery<ParseObject> queryFalse = ParseQuery.getQuery(USER);
-                        ParseQuery<ParseObject> queryNull = ParseQuery.getQuery(USER);
-
-                        queryFalse.whereEqualTo(USER_IS_PERSON, false);
-                        queryNull.whereEqualTo(USER_IS_PERSON, null);
-
-                        List<ParseQuery<ParseObject>> queriesUser = new ArrayList<>();
-                        queriesUser.add(queryFalse);
-                        queriesUser.add(queryNull);
-
-                        userQuery = ParseQuery.or(queriesUser);
-                    } else {
-                        userQuery.whereEqualTo(USER_IS_PERSON, true);
-                    }
-                    List users = userQuery.find();
-                    query.whereContainedIn(AD_AUTHOR_ID, users);
-                }
-                query.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(ParseUser.getCurrentUser()));
-                return (ArrayList<ParseObject>) query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<ParseObject>();
-        }
-
-        public static ArrayList<ParseObject> getBadIds(ParseUser currentUser) {
-            ArrayList<ParseObject> bad = new ArrayList<>();
-            try {
-                ParseQuery<ParseObject> whomBlockedQuery = ParseQuery.getQuery(BLACKLIST);
-                whomBlockedQuery.whereEqualTo(BLACKLIST_WHOM_BLOCKED, currentUser);
-                List<ParseObject> iBlock = whomBlockedQuery.find();
-                for (ParseObject row : iBlock) {
-                    bad.add(row.getParseObject(BLACKLIST_BLOCKED_USER));
-                }
-
-                ParseQuery<ParseObject> blockedUserQuery = ParseQuery.getQuery(BLACKLIST);
-                blockedUserQuery.whereEqualTo(BLACKLIST_BLOCKED_USER, currentUser);
-                List<ParseObject> meBlocked = blockedUserQuery.find();
-                for (ParseObject row : meBlocked) {
-                    bad.add(row.getParseObject(BLACKLIST_WHOM_BLOCKED));
-                }
-
-                return bad;
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return bad;
-        }
 
         public static ArrayList<ParseObject> getAdsBySubcategorys(ArrayList<ParseObject> subcategoryObjects, int currentListSize) {
             try {
                 ParseQuery<ParseObject> query = ParseQuery.getQuery(AD);
                 query.whereContainedIn(AD_SUBCATEGORY_OBJECT, subcategoryObjects);
-                query.whereNotContainedIn(AD_AUTHOR_ID, getBadIds(ParseUser.getCurrentUser()));
                 query.orderByDescending(AD_CREATED_AT);
                 query.setSkip(currentListSize);
                 query.setLimit(10);

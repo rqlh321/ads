@@ -1,4 +1,4 @@
-package ru.example.sic.my_ads.fragments.main.catalog;
+package ru.example.sic.my_ads.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,11 +45,11 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @OnClick(R.id.show_on_map)
     void onMapClick() {
-        getFragmentManager().beginTransaction()
-                .hide(this)
-                .add(R.id.container_catalog, new MapFragment())
-                .addToBackStack(null)
-                .commit();
+//        getFragmentManager().beginTransaction()
+//                .hide(this)
+//                .add(R.id.container_catalog, new MapFragment())
+//                .addToBackStack(null)
+//                .commit();
     }
 
     @Nullable
@@ -64,7 +64,7 @@ public class ListAdsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ListAdsAdapter(this, categoryAds, R.id.container_catalog);
+        adapter = new ListAdsAdapter(this, categoryAds);
         recyclerView.setAdapter(adapter);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);

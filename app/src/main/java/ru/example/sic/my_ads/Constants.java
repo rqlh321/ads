@@ -14,4 +14,5 @@ public final class Constants {
     public static final String LAST = "last";
     public static final String PROMO = "promo";
     public static final String CATALOG = "catalog";
+    public static final String CATALOG_VERSION = "catalog_version";
 }

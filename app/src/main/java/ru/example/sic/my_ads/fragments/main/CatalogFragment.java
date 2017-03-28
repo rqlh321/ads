@@ -1,4 +1,4 @@
-package ru.example.sic.my_ads.fragments.main.catalog;
+package ru.example.sic.my_ads.fragments.main;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -31,7 +31,6 @@ import butterknife.OnClick;
 import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ExpandableRecyclerViewAdapter;
-import ru.example.sic.my_ads.models.Ad;
 import ru.example.sic.my_ads.models.Catalog;
 import ru.example.sic.my_ads.models.Category;
 import rx.Observable;
@@ -43,14 +42,13 @@ import rx.schedulers.Schedulers;
 import static ru.example.sic.my_ads.Constants.LANGUAGE;
 
 public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private SharedPreferences prefs;
-    private Gson gson = new Gson();
-
     @BindView(R.id.expendeble_recycler_view)
     public RecyclerView expandableRecyclerView;
-
     @BindView(R.id.refresh)
     public SwipeRefreshLayout refresh;
+    public ArrayList<Category> categoryList;
+    private SharedPreferences prefs;
+    private Gson gson = new Gson();
 
     @OnClick(R.id.add)
     public void addCategory() {
@@ -76,8 +74,6 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     }
 
-    public ArrayList<Category> categoryList;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -86,9 +82,10 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
         refresh.setOnRefreshListener(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        String catalogString = prefs.getString(Constants.CATALOG, null);
-        if (catalogString != null) {
-            Type type = new TypeToken<List<Category>>() {}.getType();
+        if (prefs.contains(Constants.CATALOG)) {
+            String catalogString = prefs.getString(Constants.CATALOG, null);
+            Type type = new TypeToken<List<Category>>() {
+            }.getType();
             categoryList = gson.fromJson(catalogString, type);
             createCatalog();
         } else {
@@ -97,14 +94,6 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
         }
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        prefs.edit()
-                .putString(Constants.CATALOG, gson.toJson(categoryList))
-                .apply();
     }
 
     @Override
@@ -150,6 +139,9 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     public void onNext(final ArrayList<Category> objects) {
                         categoryList.clear();
                         categoryList.addAll(objects);
+                        prefs.edit()
+                                .putString(Constants.CATALOG, gson.toJson(categoryList))
+                                .apply();
                         createCatalog();
                     }
                 });

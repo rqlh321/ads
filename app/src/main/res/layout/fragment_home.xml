@@ -36,7 +36,6 @@
                 android:textSize="18sp" />
 
             <HorizontalScrollView
-                android:id="@+id/first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
@@ -52,7 +51,6 @@
             </HorizontalScrollView>
 
             <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/locationAdsText"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_marginTop="10dp"
@@ -67,7 +65,6 @@
                 android:textSize="18sp" />
 
             <HorizontalScrollView
-                android:id="@+id/second"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"

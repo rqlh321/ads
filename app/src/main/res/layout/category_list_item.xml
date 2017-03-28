@@ -22,20 +22,20 @@
 
 
     <LinearLayout
-        android:padding="5dp"
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/my_avatars"
         android:gravity="right"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <TextView
-            android:gravity="right"
             android:id="@+id/text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="right"
             android:maxLines="2"
             android:padding="5dp"
             android:text="title"
@@ -44,11 +44,11 @@
             android:textSize="18sp" />
 
         <TextView
-            android:gravity="right"
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="right"
             android:maxLines="2"
             android:padding="5dp"
             android:text="location"
@@ -57,11 +57,11 @@
             android:textSize="16sp" />
 
         <TextView
-            android:gravity="right"
             android:id="@+id/cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="right"
             android:padding="5dp"
             android:text="cost"
             android:textColor="@color/primaryColor"
@@ -72,7 +72,6 @@
 
 
     <View
-        android:id="@+id/favoriteDelimer"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/content"

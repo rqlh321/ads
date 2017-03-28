@@ -12,26 +12,29 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.adapters.ListAdsAdapter;
+import ru.example.sic.my_ads.models.Ad;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class SearchSimpleFragment extends Fragment {
+public class SearchFragment extends Fragment {
     @BindView(R.id.textForSearch)
     EditText textForSearch;
-    private ArrayList<ParseObject> resultList = new ArrayList<>();
+    private ArrayList<Ad> resultList = new ArrayList<>();
     private ListAdsAdapter adapter;
 
     @OnClick(R.id.searchButton)
@@ -43,16 +46,37 @@ public class SearchSimpleFragment extends Fragment {
             progress.setCanceledOnTouchOutside(false);
             progress.setCancelable(false);
             progress.show();
+
             Observable.just(textForSearch.getText().toString())
-                    .map(new Func1<String, ArrayList<ParseObject>>() {
+                    .map(new Func1<String, ArrayList<Ad>>() {
                         @Override
-                        public ArrayList<ParseObject> call(String text) {
-                            return Parse.Request.getSearchResult("", "", 2, 0, text, "", "");
+                        public ArrayList<Ad> call(String text) {
+                            ParseQuery<ParseObject> queryContent = ParseQuery.getQuery(Ad.class.getSimpleName());
+                            queryContent.whereMatches(Ad.CONTENT, "(" + textForSearch + ")", "i");
+
+                            ParseQuery<ParseObject> queryTitle = ParseQuery.getQuery(Ad.class.getSimpleName());
+                            queryTitle.whereMatches(Ad.TITLE, "(" + textForSearch + ")", "i");
+
+                            List<ParseQuery<ParseObject>> queries = new ArrayList<>();
+                            queries.add(queryContent);
+                            queries.add(queryTitle);
+
+                            try {
+                                List<ParseObject> objects = ParseQuery.or(queries).find();
+                                ArrayList<Ad> result = new ArrayList<>();
+                                for (ParseObject parseObject : objects) {
+                                    result.add(new Ad(parseObject));
+                                }
+                                return result;
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                                return null;
+                            }
                         }
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<ArrayList<ParseObject>>() {
+                    .subscribe(new Observer<ArrayList<Ad>>() {
                         @Override
                         public void onCompleted() {
 
@@ -64,7 +88,7 @@ public class SearchSimpleFragment extends Fragment {
                         }
 
                         @Override
-                        public void onNext(ArrayList<ParseObject> result) {
+                        public void onNext(ArrayList<Ad> result) {
                             progress.dismiss();
                             resultList.clear();
                             resultList.addAll(result);
@@ -85,8 +109,8 @@ public class SearchSimpleFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-//        adapter = new ListAdsAdapter(getParentFragment(), resultList, R.id.support_container);
-//        recyclerView.setAdapter(adapter);
+        adapter = new ListAdsAdapter(getParentFragment(), resultList);
+        recyclerView.setAdapter(adapter);
 
         return view;
     }

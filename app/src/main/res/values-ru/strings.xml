@@ -1,191 +1,43 @@
 <resources>
-    <string name="clear">Очистить</string>
-    <string name="owner">Владелец</string>
-    <string name="favorite_on_map">Избранное на карте</string>
 
-    <string name="hello">Добро пожаловать в мобильное приложение бесплатных объявлений!</string>
-    <string name="payment_condition">Условия оплаты</string>
-    <string name="payment">По договоренности</string>
-    <string name="cost">Цена:</string>
-    <string name="clear_fields">Очистить поля</string>
-    <string name="where_to_search">Искать:</string>
-    <string name="in_title">В заголовке</string>
-    <string name="in_description">В тексте</string>
-    <string name="everywhere">Везде</string>
-    <string name="any">Любой</string>
-    <string name="author">Автор:</string>
-    <string name="complain">Пожаловаться</string>
-    <string name="complain_hint">Напишите нам о проблеме</string>
-    <string name="complain_block_hint">Заблокировать автора</string>
     <string name="my_profile">Профиль</string>
-    <string name="one_m">1 месяц</string>
-    <string name="three_m">3 месяца</string>
-    <string name="ever">Бессрочно</string>
-    <string name="empty_favorite">Пока ни одного объявления. Что бы сделать объявление Избранным нажмите на символ звезды в любом объявлении.</string>
-    <string name="empty_favorite_list">Вы можете сохранить любые объявления в избранное нажав на значек звездочки в любом объявлении.</string>
-    <string name="empty_favorite_title">Список избранного пуст</string>
-    <string name="pull_down">Потяни для обновления</string>
-    <string name="refresh">Обновляю</string>
-    <string name="menu">Меню</string>
     <string name="symbols_left">Осталось %d символов</string>
     <string name="search_hint">Что вы хотите найти?</string>
-    <string name="posted">Опубликовано</string>
-    <string name="full_name">Ф И О</string>
-    <string name="add_to_favorite">Добавить в Избранное</string>
-    <string name="views">Просмотры</string>
-    <string name="show_map">Показать карту</string>
-    <string name="actively">Активно</string>
-    <string name="next">Далее</string>
-    <string name="front">Вперед</string>
-    <string name="validity">Срок действия объявления</string>
 
-    <string name="back">Назад</string>
-    <string name="change_avatar">Сменить фото</string>
-    <string name="save">Сохранить</string>
-    <string name="enter_address">Введите адрес</string>
-    <string name="get_location">Заполнить на основе текущего места положения</string>
-    <string name="apply">Готово</string>
-    <string name="edit_contacts">Настроить контакты</string>
-    <string name="add_contact">Добавить контакт</string>
-    <string name="favorite">Избранное</string>
     <string name="all_ads">Все объявления</string>
     <string name="address_hint">Адрес для метки на карте</string>
-    <string name="no_ads_near">Рядом с вами нет объявлений</string>
-    <string name="contacts_limit">Контакт этого типа уже создан</string>
-    <string name="not_actively">Отключено</string>
-    <string name="edit_ad">Изменить</string>
-    <string name="edit_ad_title">Редактирование</string>
-    <string name="apply_ad">Применить</string>
-    <string name="apply_lic">Принять</string>
     <string name="call">Вызов</string>
-    <string name="forbidden">Не может быть создано</string>
     <string name="empty_search_string">Вы не ввели слово для поиска</string>
-    <string name="action_websearch">Поиск</string>
-    <string name="app_not_available">Нет доступных браузеров</string>
-    <string name="action_settings">Настройк</string>
-    <string name="drawer_open">Открыть</string>
-    <string name="drawer_close">Закрыть</string>
-    <string name="search_global">Поиск&#8230;</string>
-    <string name="about">О нас</string>
-    <string name="share">Поделиться</string>
-    <string name="checkin">Проверить</string>
-    <string name="menu_settings">Настройки</string>
-    <string name="signIn">Войти</string>
-    <string name="signInLabel">Войдите чтобы воплотить свой опыт</string>
-    <string name="homeImageText">Шоу должно продолжаться!</string>
-    <string name="page_number_1d">Страница #%d</string>
-    <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
-    <string name="yes">Да</string>
-    <string name="no">Нет</string>
-    <string name="send">Отправить</string>
-    <string name="lastAds">Последние объявления</string>
     <string name="recommendedAds">АДМИН РЕКОМЕНДУЕТ</string>
-    <string name="favoriteRates">Нравится</string>
     <string name="logout_text">Выйти</string>
     <string name="login_text">Войти</string>
-    <string name="ratingTextView">Если вам понравилось приложение тогда оцените его!</string>
-    <string name="plus">Плюс</string>
-    <string name="minus">Минус</string>
-    <string name="map">Карта</string>
     <string name="loading">Загрузка</string>
     <string name="wait_loading">Подождите пока загрузится&#8230;</string>
-    <string name="menu_home">Домой</string>
     <string name="menu_catalog">Категории</string>
-    <string name="menu_shares">Акции</string>
-    <string name="menu_blacklist">Заблокированные</string>
-    <string name="menu_ads">Объявления</string>
-    <string name="menu_create_ad">Создать</string>
     <string name="menu_my_ads">Моё</string>
-    <string name="menu_last_viewed">Последние</string>
-    <string name="menu_favorites">Избранное</string>
-    <string name="menu_other">Другое</string>
-    <string name="menu_search">Поиск</string>
-    <string name="menu_about_program">Лицензионное соглашение</string>
     <string name="fragment_home">Домой</string>
-    <string name="fragment_post">Объявления</string>
-    <string name="fragment_my_ads">Мои объявления</string>
-    <string name="fragment_favorites">Избранное</string>
-    <string name="category_tittle">Категория</string>
-    <string name="register_text">Регистрация</string>
-    <string name="forget_password_text">Забыли пароль?</string>
-    <string name="auto_error">Твоя почта и/или пароль не верны</string>
-    <string name="submit_registration_text">Подтвердить регистрацию</string>
-    <string name="my_ads">Мои</string>
-    <string name="system_lang">Выбор языка</string>
-    <string name="my_blacklist">Заблокированные</string>
-    <string name="favourites_list">Список Избранного</string>
-    <string name="settings_title">Настройки</string>
-    <string name="block_button">Блокировать</string>
-    <string name="unblock_button">Разблокировать</string>
     <string name="choose_category_button">Выбрать категорию</string>
     <string name="title_hint">Заголовок объявления</string>
     <string name="description_hint">Текст объявления</string>
     <string name="phone_number_hint">Номер телефона</string>
     <string name="cost_hint">Цена</string>
-    <string name="location_hint">Местоположение</string>
-    <string name="currency_hint">Валюта</string>
-    <string name="ready">Готово</string>
-    <string name="add_photos_text">Фото привлекут больше внимания к вашему объявлению</string>
     <string name="create_ad_button">Создать объявление</string>
     <string name="add_pictures_button">Добавить фото</string>
     <string name="person">Физ.лицо </string>
     <string name="organization">Юр.лицо</string>
-    <string name="id">ID: </string>
-    <string name="user_type">Тип пользователя</string>
-    <string name="first_name">Имя</string>
-    <string name="middle_name">Отчество</string>
-    <string name="last_name">Фамилия</string>
-    <string name="add_phone">Добавить номер телефона</string>
-    <string name="email_add">Электронная почта</string>
-    <string name="phone_add">Телефон</string>
-    <string name="website_add">Веб-сайт</string>
-    <string name="address_add">Адрес</string>
-    <string name="add_button">Добавить</string>
-    <string name="language">Язык</string>
-    <string name="my_profile_settings">Контактные данные</string>
-    <string name="support">Поддержка</string>
-    <string name="contacts">Контакты</string>
-    <string name="question">Задать вопрос</string>
     <string name="delete">Удалить</string>
-    <string name="massage">Сообщение</string>
-    <string name="report_error">Сообщить об ошибке</string>
-    <string name="report_review">Отправить пожелание</string>
-    <string name="report_question">Задать вопрос</string>
-    <string name="report">Поддержка</string>
-    <string name="report_to_ad">Пожаловаться</string>
     <string name="empty_desc">Заполните описание</string>
-    <string name="empty_address">Введите адрес</string>
     <string name="empty_cost">Введите цену</string>
     <string name="empty_title">Введите заголовок</string>
     <string name="empty_category">Выберите категорию</string>
-    <string name="phone_empty">Номер телефона не найден</string>
-    <string name="email_empty">Электронная почта не найдена</string>
     <string name="no_app_to_send_email">Не установлено приложение для отправки почты</string>
-    <string name="enter_phone_hint">Номер телефона без кода страны</string>
-    <string name="alert_re_ask_favorite">Вы действительно хотите удалить это объявление из избранного?</string>
     <string name="alert_re_ask_your">Вы действительно хотите удалить свое объявление?</string>
-    <string name="question_desc">Ваш вопрос</string>
-    <string name="review_desc">Ваше пожелание</string>
-    <string name="error_desc">Сообщение об ошибке</string>
-    <string name="report_to_ad_title">Ваша жалоба</string>
-    <string name="all_ads_category">Все Объявления</string>
-    <string name="all_category">Все</string>
-    <string name="sell_now">Начни продавать сейчас!</string>
-    <string name="sell_now_desc">Продай свои ненужные вещи прямо сейчас!</string>
-    <string name="support_title">Какого рода поддержка вам нужна?</string>
     <plurals name="com_parse_ui_password_too_short_toast">
         <item quantity="one">Пароль должен быть не менее %d символов</item>
         <item quantity="other">Пароль должен быть не менее %d символов</item>
         <item quantity="few">Пароль должен быть не менее %d символов</item>
         <item quantity="many">Пароль должен быть не менее %d символов</item>
-    </plurals>
-    <plurals name="days_count">
-        <item quantity="zero"> cегодня</item>
-        <item quantity="one"> %d день назад</item>
-        <item quantity="few"> %d дня назад</item>
-        <item quantity="many"> %d дней назад</item>
-        <item quantity="other"> %d дней назад</item>
     </plurals>
     <string name="com_parse_ui_confirm_password_input_hint">Введите пароль повторно</string>
     <string name="com_parse_ui_create_account_button_label">Создать аккаунт</string>
@@ -218,65 +70,10 @@
     <string name="com_parse_ui_username_input_hint">Имя пользователя</string>
     <string name="com_parse_ui_username_taken_toast">Имя пользователя занято, выберите другое имя</string>
 
-    <string name="advanced_search">Расширенный</string>
     <string name="search">Поиск</string>
-    <string name="start_cost_hint">Начальная цена</string>
-    <string name="end_cost_hint">Конечная цена</string>
-    <string name="text_for_search_hint">Текст поиска</string>
-    <string name="Country_city">Страна, город&#8230;</string>
-    <string name="lic_question">Вы согласны?</string>
-    <string name="address_do_not_exist_title">Неверный адрес</string>
-    <string name="address_do_not_exist_text">Попробуйте ввести данные ещё раз&#8230;</string>
-    <string name="contacts_do_not_exist_title">Контактные данные отсутствуют</string>
-    <string name="contacts_do_not_exist_text">Для того чтобы создать объявление вам необходимо добавить номер телефона или электронную почту</string>
-    <string name="contacts_do_not_exist_text_map">Для того чтобы найти объявления поблизости необходимо задать свой адрес</string>
-    <string name="pictures_quot">Вы можете загрузить всего 4 изображения</string>
-    <string name="lic_text">Здесь могло бы быть ваше лицензионное соглашение</string>
 
-    <string-array name="paymentType">
-        <item>Разовая оплата</item>
-        <item>Оплата в час</item>
-        <item>Оплата в день</item>
-        <item>Оплата в неделю</item>
-        <item>Оплата в месяц</item>
-        <item>Оплата в год</item>
-    </string-array>
-    <string-array name="bargainType">
-        <item>&#8230;</item>
-        <item>Торг</item>
-        <item>Без торга</item>
-    </string-array>
-    <string-array name="contact_type">
-        <item>Адрес</item>
-        <item>Телефон</item>
-        <item>E-mail</item>
-        <item>Веб сайт</item>
-        <item>Facebook</item>
-        <item>VK</item>
-    </string-array>
-    <string-array name="whereToSearch">
-        <item>Искать везде</item>
-        <item>В заголовке</item>
-        <item>В описании</item>
-    </string-array>
-    <string-array name="personType">
-        <item>Физ.лицо</item>
-        <item>Юр.лицо</item>
-        <item>Неважно</item>
-    </string-array>
-    <string-array name="supportType">
-        <item>Задать вопрос</item>
-        <item>Сообщить о проблеме</item>
-        <item>Оставить отзыв</item>
-    </string-array>
-    <string-array name="how_long">
-        <item>1 месяц</item>
-        <item>3 месяца</item>
-        <item>Бессрочно</item>
-    </string-array>
     <string name="name">Имя</string>
     <string name="app_name">Мои объявления</string>
-    <string name="title_activity_maps">Карта</string>
     <string name="create_ad_text">Скоро ваше объявление будет добавлено</string>
     <string name="no_photo">Вы должны добавить фотографию</string>
     <string name="bad_address">Такой локации не существует</string>

@@ -1,4 +1,4 @@
-package ru.example.sic.my_ads.fragments.main.catalog;
+package ru.example.sic.my_ads.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.example.sic.my_ads.Parse;
 import ru.example.sic.my_ads.R;
 
 import static ru.example.sic.my_ads.Parse.Constants.AD_ADDRESS;

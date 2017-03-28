@@ -7,11 +7,11 @@
     <TextView
         android:id="@+id/login_help_instructions"
         style="@style/ParseLoginUI.TextView"
-        android:textColor="#000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/com_parse_ui_login_help_instructions" />
+        android:text="@string/com_parse_ui_login_help_instructions"
+        android:textColor="#000" />
 
     <EditText
         android:id="@+id/login_help_email_input"

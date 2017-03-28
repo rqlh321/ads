@@ -1,14 +1,12 @@
 package ru.example.sic.my_ads.fragments.main;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatImageView;
@@ -22,14 +20,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,8 +33,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.activity.MainActivity;
 import ru.example.sic.my_ads.activity.SplashActivity;
 import ru.example.sic.my_ads.activity.ViewActivity;
 import ru.example.sic.my_ads.models.Ad;
@@ -58,8 +53,6 @@ import static ru.example.sic.my_ads.Parse.Constants.PROMO_ACTIONS_ACTIVE;
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public static final String[] PREVIEW_KEYS = new String[]{Ad.TITLE, Ad.PHOTO, Ad.COST, Ad.CURRENCY, Ad.AUTHOR_ID};
-    private SharedPreferences prefs;
-    private Gson gson = new Gson();
     private ArrayList<Ad> recommended;
     private ArrayList<Ad> last;
     private ArrayList<PromoAction> promoActions;
@@ -87,52 +80,29 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
         refresh.setOnRefreshListener(this);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        String recommendedString = prefs.getString(Constants.RECOMMENDED, null);
-        if (recommendedString != null) {
-            Type type = new TypeToken<List<Ad>>() {
-            }.getType();
-            recommended = gson.fromJson(recommendedString, type);
+        recommended = ((MainActivity) getActivity()).recommended;
+        if (recommended.size() != 0) {
             addAds(recommended, linearRecommended);
         } else {
-            recommended = new ArrayList<>();
             getRecommended();
         }
 
-        String lastString = prefs.getString(Constants.LAST, null);
-        if (lastString != null) {
-            Type type = new TypeToken<List<Ad>>() {
-            }.getType();
-            last = gson.fromJson(lastString, type);
+        last = ((MainActivity) getActivity()).last;
+        if (last.size() != 0) {
             addAds(last, linearLastAds);
         } else {
-            last = new ArrayList<>();
             getLast();
         }
 
-        String promoString = prefs.getString(Constants.PROMO, null);
-        if (promoString != null) {
-            Type type = new TypeToken<List<Ad>>() {
-            }.getType();
-            promoActions = gson.fromJson(promoString, type);
+        promoActions = ((MainActivity) getActivity()).promoActions;
+        if (promoActions.size() != 0) {
             addBanners();
         } else {
-            promoActions = new ArrayList<>();
             getBanners();
         }
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        prefs.edit()
-                .putString(Constants.RECOMMENDED, gson.toJson(recommended))
-                .putString(Constants.LAST, gson.toJson(last))
-                .putString(Constants.PROMO, gson.toJson(promoActions))
-                .apply();
     }
 
     @Override

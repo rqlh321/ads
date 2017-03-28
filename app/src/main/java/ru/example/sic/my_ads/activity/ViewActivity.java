@@ -83,7 +83,7 @@ public class ViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        ad = (Ad) getIntent().getSerializableExtra("ad");
+        ad = getIntent().getParcelableExtra("ad");
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -98,9 +98,9 @@ public class ViewActivity extends AppCompatActivity {
 
         if (savedInstanceState != null &&
                 savedInstanceState.containsKey("ad") &&
-                savedInstanceState.getSerializable("ad") != null &&
-                ((Ad) savedInstanceState.getSerializable("ad")).content != null) {
-            ad = (Ad) savedInstanceState.getSerializable("ad");
+                savedInstanceState.getParcelable("ad") != null &&
+                ((Ad) savedInstanceState.getParcelable("ad")).content != null) {
+            ad = savedInstanceState.getParcelable("ad");
             setupAd(ad);
         } else {
             Observable.just(ad)
@@ -193,7 +193,7 @@ public class ViewActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("user", user);
-        outState.putSerializable("ad", ad);
+        outState.putParcelable("ad", ad);
     }
 
     @Override

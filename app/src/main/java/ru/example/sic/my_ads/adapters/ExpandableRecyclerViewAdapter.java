@@ -24,8 +24,7 @@ import java.util.List;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.activity.CreateAdActivity;
 import ru.example.sic.my_ads.fragments.CreateAdFragment;
-import ru.example.sic.my_ads.fragments.main.catalog.CatalogRootFragment;
-import ru.example.sic.my_ads.fragments.main.catalog.ListAdsFragment;
+import ru.example.sic.my_ads.fragments.ListAdsFragment;
 import ru.example.sic.my_ads.models.Catalog;
 import ru.example.sic.my_ads.models.Category;
 
@@ -81,7 +80,10 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
         final Catalog mCatalog = (Catalog) parentListItem;
         categoryViewHolder.textView.setText(LANGUAGE.equals("ru") ? mCatalog.getCategory().ru : mCatalog.getCategory().en);
         switch (fragment.getTag()) {
-            case CatalogRootFragment.TAG:
+            case CreateAdFragment.TAG:
+                categoryViewHolder.imageView.setVisibility(View.GONE);
+                break;
+            default:
                 categoryViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -117,9 +119,6 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                     }
                 });
                 break;
-            default:
-                categoryViewHolder.imageView.setVisibility(View.GONE);
-                break;
         }
     }
 
@@ -135,26 +134,26 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                         CreateAdFragment createAdFragment = (CreateAdFragment) fragment.getFragmentManager()
                                 .findFragmentByTag(CreateAdActivity.TAG);
                         createAdFragment.categoryText.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
-                        createAdFragment.category = mSubCatalogItem.en;
+                        createAdFragment.categoryId = mSubCatalogItem.id;
                         fragment.getActivity().onBackPressed();
                     }
                 });
                 break;
-            case CatalogRootFragment.TAG:
+            default:
                 subCategoryViewHolder.subCatalog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ListAdsFragment listAdsFragment = new ListAdsFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable(EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
-                        bundle.putBoolean(EXTRA_IS_CATEGORY, false);
-                        listAdsFragment.setArguments(bundle);
-                        fragment.getFragmentManager()
-                                .beginTransaction()
-                                .hide(fragment)
-                                .add(R.id.container_catalog, listAdsFragment)
-                                .addToBackStack(null)
-                                .commit();
+//                        ListAdsFragment listAdsFragment = new ListAdsFragment();
+//                        Bundle bundle = new Bundle();
+//                        bundle.putSerializable(EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
+//                        bundle.putBoolean(EXTRA_IS_CATEGORY, false);
+//                        listAdsFragment.setArguments(bundle);
+//                        fragment.getFragmentManager()
+//                                .beginTransaction()
+//                                .hide(fragment)
+//                                .add(R.id.container_catalog, listAdsFragment)
+//                                .addToBackStack(null)
+//                                .commit();
                     }
                 });
                 break;

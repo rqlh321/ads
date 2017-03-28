@@ -10,6 +10,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.util.ArrayList;
 
 import ru.example.sic.my_ads.R;
@@ -20,12 +23,10 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
 
     private ArrayList<Ad> adList;
     private Fragment fragment;
-    int containerId;
 
-    public ListAdsAdapter(Fragment fragment, ArrayList<Ad> list, int containerId) {
+    public ListAdsAdapter(Fragment fragment, ArrayList<Ad> list) {
         this.adList = list;
         this.fragment = fragment;
-        this.containerId = containerId;
     }
 
 
@@ -37,7 +38,11 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-       // holder.mImageView.setImageBitmap(adList.get(position).photo);
+        Glide.with(fragment.getContext())
+                .load(adList.get(position).photo)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(holder.mImageView);
         holder.mLocation.setText(adList.get(position).address);
         String cost = adList.get(position).cost + " " + adList.get(position).currency;
         holder.mTextViewCost.setText(cost);

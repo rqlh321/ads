@@ -37,13 +37,13 @@ import butterknife.OnClick;
 import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.Utils;
-import ru.example.sic.my_ads.fragments.main.catalog.CatalogFragment;
+import ru.example.sic.my_ads.fragments.main.CatalogFragment;
 import ru.example.sic.my_ads.models.Ad;
 
 public class CreateAdFragment extends Fragment {
     public static final String TAG = "CreateAdFragment";
     private Bitmap resizedPhoto;
-    public String category;
+    public String categoryId;
     @BindView(R.id.choose_category)
     public TextView categoryText;
     @BindView(R.id.address)
@@ -114,7 +114,7 @@ public class CreateAdFragment extends Fragment {
                                 row.put(Ad.CURRENCY, dropdownCurrency.getSelectedItem().toString());
                                 row.put(Ad.ADDRESS, address.getText().toString());
                                 row.put(Ad.TITLE, title.getText().toString());
-                                row.put(Ad.SUBCATEGORY, category);
+                                row.put(Ad.SUBCATEGORY, categoryId);
                                 row.put(Ad.CONTENT, description.getText().toString());
                                 row.put(Ad.COST, Integer.parseInt(cost.getText().toString()));
 
@@ -172,7 +172,7 @@ public class CreateAdFragment extends Fragment {
         if (savedInstanceState != null) {
             resizedPhoto = savedInstanceState.getParcelable("resizedPhoto");
             photo.setImageBitmap(resizedPhoto);
-            category = savedInstanceState.getString("category");
+            categoryId = savedInstanceState.getString("category");
             categoryText.setText(savedInstanceState.getString("categoryText"));
         }
         if (resizedPhoto != null) {
@@ -205,7 +205,7 @@ public class CreateAdFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("categoryText", categoryText.getText().toString());
-        outState.putString("category", category);
+        outState.putString("category", categoryId);
         outState.putParcelable("resizedPhoto", resizedPhoto);
     }
 

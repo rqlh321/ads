@@ -1,11 +1,13 @@
 package ru.example.sic.my_ads.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.ParseObject;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class Ad implements Serializable {
+public class Ad implements Parcelable {
     public static final String CURRENCY = "currensy";
     public static final String AUTHOR_ID = "authorID";
     public static final String COST = "cost";
@@ -70,5 +72,59 @@ public class Ad implements Serializable {
         createdAt = parseObject.containsKey(CREATED_AT) ? parseObject.getString(CREATED_AT) : createdAt;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.currency);
+        dest.writeString(this.authorId);
+        dest.writeValue(this.cost);
+        dest.writeValue(this.views);
+        dest.writeString(this.address);
+        dest.writeString(this.title);
+        dest.writeString(this.content);
+        dest.writeLong(this.date != null ? this.date.getTime() : -1);
+        dest.writeValue(this.longitude);
+        dest.writeValue(this.latitude);
+        dest.writeValue(this.recommended);
+        dest.writeString(this.subcategory);
+        dest.writeString(this.createdAt);
+        dest.writeString(this.photo);
+    }
+
+    protected Ad(Parcel in) {
+        this.id = in.readString();
+        this.currency = in.readString();
+        this.authorId = in.readString();
+        this.cost = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.views = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.address = in.readString();
+        this.title = in.readString();
+        this.content = in.readString();
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
+        this.longitude = (Double) in.readValue(Double.class.getClassLoader());
+        this.latitude = (Double) in.readValue(Double.class.getClassLoader());
+        this.recommended = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.subcategory = in.readString();
+        this.createdAt = in.readString();
+        this.photo = in.readString();
+    }
+
+    public static final Parcelable.Creator<Ad> CREATOR = new Parcelable.Creator<Ad>() {
+        @Override
+        public Ad createFromParcel(Parcel source) {
+            return new Ad(source);
+        }
+
+        @Override
+        public Ad[] newArray(int size) {
+            return new Ad[size];
+        }
+    };
 }
 

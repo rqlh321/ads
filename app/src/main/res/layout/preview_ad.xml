@@ -4,18 +4,17 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:foregroundGravity="center"
-        android:layout_gravity="center"
         android:id="@+id/pic"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:foregroundGravity="center" />
 
     <TextView
-        android:padding="5dp"
         android:id="@+id/cost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,6 +23,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/button_not_active"
+        android:padding="5dp"
         android:textColor="@android:color/white"
         android:textSize="10sp" />
 </FrameLayout>

@@ -16,33 +16,28 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.example.sic.my_ads.R;
+import ru.example.sic.my_ads.models.User;
 
 public class ProfileFragment extends Fragment {
-    private static final String NAME = "name";
-    private static final String PERSON = "person";
-    private static final String PHONE = "phone";
-    private static final String EMAIL = "email";
-    public static final String ADS = "ads";
 
     @BindView(R.id.person_type)
-    RadioGroup person;
+    public RadioGroup person;
 
     @BindView(R.id.name)
-    TextView name;
+    public TextView name;
 
     @BindView(R.id.phone)
-    EditText phone;
+    public EditText phone;
 
     @BindView(R.id.email)
-    EditText email;
-
+    public EditText email;
 
     @OnClick(R.id.save)
     public void save() {
-        ParseUser.getCurrentUser().put(NAME, name.getText().toString());
-        ParseUser.getCurrentUser().put(PHONE, phone.getText().toString());
-        ParseUser.getCurrentUser().put(EMAIL, email.getText().toString());
-        ParseUser.getCurrentUser().put(PERSON, person.getCheckedRadioButtonId() == R.id.person);
+        ParseUser.getCurrentUser().put(User.NAME, name.getText().toString());
+        ParseUser.getCurrentUser().put(User.PHONE, phone.getText().toString());
+        ParseUser.getCurrentUser().put(User.EMAIL, email.getText().toString());
+        ParseUser.getCurrentUser().put(User.PERSON, person.getCheckedRadioButtonId() == R.id.person);
         ParseUser.getCurrentUser().saveInBackground();
     }
 
@@ -55,16 +50,15 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-
     protected void setPersonalData() {
-        if (ParseUser.getCurrentUser().getBoolean(PERSON)) {
+        if (ParseUser.getCurrentUser().getBoolean(User.PERSON)) {
             person.check(R.id.person);
         } else {
             person.check(R.id.organization);
         }
-        name.setText(ParseUser.getCurrentUser().getString(NAME));
-        phone.setText(ParseUser.getCurrentUser().getString(PHONE));
-        email.setText(ParseUser.getCurrentUser().getString(EMAIL));
+        name.setText(ParseUser.getCurrentUser().getString(User.NAME));
+        phone.setText(ParseUser.getCurrentUser().getString(User.PHONE));
+        email.setText(ParseUser.getCurrentUser().getString(User.EMAIL));
     }
 
 }

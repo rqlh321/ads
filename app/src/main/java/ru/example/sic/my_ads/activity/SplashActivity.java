@@ -2,7 +2,6 @@ package ru.example.sic.my_ads.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import com.parse.ParseUser;
@@ -42,4 +41,5 @@ public class SplashActivity extends AppCompatActivity {
             finish();
         }
     }
+
 }
