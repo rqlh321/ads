@@ -1,36 +1,28 @@
 package ru.example.sic.my_ads.adapters;
 
-import android.content.DialogInterface;
-import android.os.Bundle;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
-import com.parse.ParseObject;
 
 import java.util.List;
 
+import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.activity.CreateAdActivity;
+import ru.example.sic.my_ads.activity.ListAdsActivity;
 import ru.example.sic.my_ads.fragments.CreateAdFragment;
-import ru.example.sic.my_ads.fragments.ListAdsFragment;
 import ru.example.sic.my_ads.models.Catalog;
 import ru.example.sic.my_ads.models.Category;
-
-import static ru.example.sic.my_ads.Constants.EXTRA_IS_CATEGORY;
-import static ru.example.sic.my_ads.Constants.EXTRA_SELECTED_CATEGORY;
-import static ru.example.sic.my_ads.Constants.LANGUAGE;
 
 class CatalogParentViewHolder extends ParentViewHolder {
     public TextView textView;
@@ -78,7 +70,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
     @Override
     public void onBindParentViewHolder(CatalogParentViewHolder categoryViewHolder, final int position, final ParentListItem parentListItem) {
         final Catalog mCatalog = (Catalog) parentListItem;
-        categoryViewHolder.textView.setText(LANGUAGE.equals("ru") ? mCatalog.getCategory().ru : mCatalog.getCategory().en);
+        categoryViewHolder.textView.setText(Constants.LANGUAGE.equals("ru") ? mCatalog.getCategory().ru : mCatalog.getCategory().en);
         switch (fragment.getTag()) {
             case CreateAdFragment.TAG:
                 categoryViewHolder.imageView.setVisibility(View.GONE);
@@ -87,18 +79,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                 categoryViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        ListAdsFragment listAdsFragment = new ListAdsFragment();
-//                        Bundle bundle = new Bundle();
-//                        bundle.putParcelable(EXTRA_SELECTED_CATEGORY, mCatalog.getCategory());
-//                        bundle.putBoolean(EXTRA_IS_CATEGORY, true);
-//                        listAdsFragment.setArguments(bundle);
-//                        fragment.getFragmentManager()
-//                                .beginTransaction()
-//                                .hide(fragment)
-//                                .add(R.id.container_catalog, listAdsFragment)
-//                                .addToBackStack(null)
-//                                .commit();
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext());
+                       /* final AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext());
                         LinearLayout linearLayout = new LinearLayout(fragment.getContext());
                         final EditText en = new EditText(fragment.getContext());
                         linearLayout.addView(en);
@@ -115,7 +96,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                                         dialog.dismiss();
                                     }
                                 });
-                        builder.create().show();
+                        builder.create().show();*/
                     }
                 });
                 break;
@@ -125,7 +106,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
     @Override
     public void onBindChildViewHolder(CatalogChildViewHolder subCategoryViewHolder, int position, Object childListItem) {
         final Category mSubCatalogItem = (Category) childListItem;
-        subCategoryViewHolder.subCatalog.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
+        subCategoryViewHolder.subCatalog.setText(Constants.LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
         switch (fragment.getTag()) {
             case CreateAdFragment.TAG:
                 subCategoryViewHolder.subCatalog.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +114,7 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                     public void onClick(View view) {
                         CreateAdFragment createAdFragment = (CreateAdFragment) fragment.getFragmentManager()
                                 .findFragmentByTag(CreateAdActivity.TAG);
-                        createAdFragment.categoryText.setText(LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
+                        createAdFragment.categoryText.setText(Constants.LANGUAGE.equals("ru") ? mSubCatalogItem.ru : mSubCatalogItem.en);
                         createAdFragment.categoryId = mSubCatalogItem.id;
                         fragment.getActivity().onBackPressed();
                     }
@@ -143,17 +124,10 @@ public class ExpandableRecyclerViewAdapter extends ExpandableRecyclerAdapter<Cat
                 subCategoryViewHolder.subCatalog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        ListAdsFragment listAdsFragment = new ListAdsFragment();
-//                        Bundle bundle = new Bundle();
-//                        bundle.putSerializable(EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
-//                        bundle.putBoolean(EXTRA_IS_CATEGORY, false);
-//                        listAdsFragment.setArguments(bundle);
-//                        fragment.getFragmentManager()
-//                                .beginTransaction()
-//                                .hide(fragment)
-//                                .add(R.id.container_catalog, listAdsFragment)
-//                                .addToBackStack(null)
-//                                .commit();
+                        Intent intent = new Intent(fragment.getContext(), ListAdsActivity.class);
+                        intent.putExtra(Constants.EXTRA_SELECTED_CATEGORY, mSubCatalogItem);
+                        intent.putExtra(Constants.EXTRA_IS_CATEGORY, true);
+                        fragment.startActivity(intent);
                     }
                 });
                 break;

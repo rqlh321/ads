@@ -52,10 +52,10 @@ public class SearchFragment extends Fragment {
                         @Override
                         public ArrayList<Ad> call(String text) {
                             ParseQuery<ParseObject> queryContent = ParseQuery.getQuery(Ad.class.getSimpleName());
-                            queryContent.whereMatches(Ad.CONTENT, "(" + textForSearch + ")", "i");
+                            queryContent.whereMatches(Ad.CONTENT, textForSearch.getText().toString(), "i");
 
                             ParseQuery<ParseObject> queryTitle = ParseQuery.getQuery(Ad.class.getSimpleName());
-                            queryTitle.whereMatches(Ad.TITLE, "(" + textForSearch + ")", "i");
+                            queryTitle.whereMatches(Ad.TITLE, textForSearch.getText().toString(), "i");
 
                             List<ParseQuery<ParseObject>> queries = new ArrayList<>();
                             queries.add(queryContent);
@@ -109,7 +109,7 @@ public class SearchFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ListAdsAdapter(getParentFragment(), resultList);
+        adapter = new ListAdsAdapter(getContext(), resultList);
         recyclerView.setAdapter(adapter);
 
         return view;

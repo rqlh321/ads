@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,14 +41,16 @@ import rx.schedulers.Schedulers;
 
 import static ru.example.sic.my_ads.Constants.LANGUAGE;
 
-public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    @BindView(R.id.expendeble_recycler_view)
-    public RecyclerView expandableRecyclerView;
-    @BindView(R.id.refresh)
-    public SwipeRefreshLayout refresh;
+public class CatalogFragment extends Fragment {
     public ArrayList<Category> categoryList;
     private SharedPreferences prefs;
     private Gson gson = new Gson();
+
+    @BindView(R.id.expendeble_recycler_view)
+    public RecyclerView expandableRecyclerView;
+
+    @BindView(R.id.progress)
+    public ProgressBar progress;
 
     @OnClick(R.id.add)
     public void addCategory() {
@@ -79,7 +81,6 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_catalog, container, false);
         ButterKnife.bind(this, view);
-        refresh.setOnRefreshListener(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (prefs.contains(Constants.CATALOG)) {
@@ -96,14 +97,8 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
         return view;
     }
 
-    @Override
-    public void onRefresh() {
-        categoryList.clear();
-        getCategory();
-    }
-
     public void getCategory() {
-        refresh.setRefreshing(true);
+        progress.setVisibility(View.VISIBLE);
         Observable.just(LANGUAGE)
                 .map(new Func1<String, ArrayList<Category>>() {
                     @Override
@@ -126,13 +121,12 @@ public class CatalogFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 .subscribe(new Observer<ArrayList<Category>>() {
                     @Override
                     public void onCompleted() {
-                        refresh.setRefreshing(false);
+                        progress.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        onCompleted();
                     }
 
                     @Override

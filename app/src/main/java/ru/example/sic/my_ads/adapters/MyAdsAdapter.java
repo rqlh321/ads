@@ -21,13 +21,11 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 
+import ru.example.sic.my_ads.Constants;
 import ru.example.sic.my_ads.R;
 import ru.example.sic.my_ads.activity.ViewActivity;
 import ru.example.sic.my_ads.fragments.main.MyAdsFragment;
 import ru.example.sic.my_ads.models.Ad;
-
-import static ru.example.sic.my_ads.Parse.Constants.AD;
-import static ru.example.sic.my_ads.Parse.Constants.OBJECT_ID;
 
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> {
     private ArrayList<Ad> ads;
@@ -70,8 +68,8 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.ViewHolder> 
                 alert.setView(layout);
                 alert.setPositiveButton(fragment.getString(R.string.delete), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        ParseQuery.getQuery(AD)
-                                .whereEqualTo(OBJECT_ID, ads.get(position).id)
+                        ParseQuery.getQuery(Ad.class.getSimpleName())
+                                .whereEqualTo(Constants.OBJECT_ID, ads.get(position).id)
                                 .getFirstInBackground(new GetCallback<ParseObject>() {
                                     @Override
                                     public void done(final ParseObject ad, ParseException e) {

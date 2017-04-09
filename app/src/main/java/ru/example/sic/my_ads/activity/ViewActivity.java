@@ -36,8 +36,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static ru.example.sic.my_ads.Parse.Constants.AD_VIEWS;
-
 public class ViewActivity extends AppCompatActivity {
     public static final String[] PREVIEW_KEYS = new String[]{Ad.VIEWS, Ad.ADDRESS, Ad.CONTENT, Ad.COORDINATES, Ad.RECOMMENDED, Ad.SUBCATEGORY, Ad.CREATED_AT};
     public static final String OBJECT_ID = "objectId";
@@ -112,7 +110,7 @@ public class ViewActivity extends AppCompatActivity {
                                         .whereEqualTo(OBJECT_ID, ad.id)
                                         .selectKeys(new HashSet<>(Arrays.asList(PREVIEW_KEYS)))
                                         .getFirst();
-                                parseObject.increment(AD_VIEWS);
+                                parseObject.increment(Ad.VIEWS);
                                 parseObject.save();
                                 ad.refresh(parseObject);
                             } catch (ParseException e) {

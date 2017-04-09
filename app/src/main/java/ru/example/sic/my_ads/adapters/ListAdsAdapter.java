@@ -1,7 +1,7 @@
 package ru.example.sic.my_ads.adapters;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,15 +20,13 @@ import ru.example.sic.my_ads.activity.ViewActivity;
 import ru.example.sic.my_ads.models.Ad;
 
 public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHolder> {
-
+    private Context context;
     private ArrayList<Ad> adList;
-    private Fragment fragment;
 
-    public ListAdsAdapter(Fragment fragment, ArrayList<Ad> list) {
+    public ListAdsAdapter(Context context, ArrayList<Ad> list) {
         this.adList = list;
-        this.fragment = fragment;
+        this.context = context;
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -38,7 +36,7 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Glide.with(fragment.getContext())
+        Glide.with(context)
                 .load(adList.get(position).photo)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
@@ -50,9 +48,9 @@ public class ListAdsAdapter extends RecyclerView.Adapter<ListAdsAdapter.ViewHold
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(fragment.getContext(), ViewActivity.class);
+                Intent intent = new Intent(context, ViewActivity.class);
                 intent.putExtra("ad", adList.get(position));
-                fragment.startActivity(intent);
+                context.startActivity(intent);
             }
         });
     }
